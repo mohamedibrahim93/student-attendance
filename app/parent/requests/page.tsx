@@ -102,7 +102,7 @@ export default function ParentRequestsPage() {
             {status}
             {status !== 'all' && (
               <Badge variant="secondary" className="ml-2">
-                {requests.filter(r => status === 'all' || r.status === status).length}
+                {requests.filter(r => r.status === status).length}
               </Badge>
             )}
           </Button>
