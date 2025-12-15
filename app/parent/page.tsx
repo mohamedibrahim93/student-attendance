@@ -10,12 +10,46 @@ import {
   Calendar,
   ArrowRight,
   Bell,
+  Send,
+  FileText,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  XCircle,
+  TrendingUp,
+  GraduationCap,
 } from 'lucide-react';
 import { formatDate, calculateAttendancePercentage } from '@/lib/utils';
 
 export default async function ParentDashboard() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
+  // Get parent profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*, school:schools(*)')
+    .eq('id', user?.id)
+    .single();
+
+  // Check if parent is approved
+  if (profile && !profile.is_approved) {
+    return (
+      <div className="max-w-md mx-auto py-16 text-center">
+        <div className="p-4 rounded-full bg-amber-100 dark:bg-amber-900/30 w-fit mx-auto mb-6">
+          <Clock className="h-12 w-12 text-amber-600" />
+        </div>
+        <h1 className="text-2xl font-bold mb-2">Account Pending Approval</h1>
+        <p className="text-muted-foreground mb-6">
+          Your account is awaiting approval from the school administration.
+          You will be notified once your account is approved.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          School: {profile?.school?.name || 'Unknown'}
+        </p>
+      </div>
+    );
+  }
 
   // Fetch children linked to this parent
   const { data: children } = await supabase
@@ -27,10 +61,44 @@ export default async function ParentDashboard() {
   const childIds = children?.map((c) => c.id) || [];
   const { data: allAttendance } = await supabase
     .from('attendance')
-    .select('*')
-    .in('student_id', childIds)
+    .select('*, subject:subjects(*)')
+    .in('student_id', childIds.length > 0 ? childIds : ['00000000-0000-0000-0000-000000000000'])
     .order('date', { ascending: false })
     .limit(100);
+
+  // Fetch absence requests
+  const { data: absenceRequests } = await supabase
+    .from('absence_requests')
+    .select('*, student:students(*)')
+    .eq('parent_id', user?.id)
+    .order('created_at', { ascending: false })
+    .limit(10);
+
+  // Fetch recent evaluations
+  const { data: evaluations } = await supabase
+    .from('evaluations')
+    .select('*, student:students(*), subject:subjects(*)')
+    .in('student_id', childIds.length > 0 ? childIds : ['00000000-0000-0000-0000-000000000000'])
+    .order('created_at', { ascending: false })
+    .limit(10);
+
+  // Fetch unread notifications
+  const { data: notifications, count: unreadCount } = await supabase
+    .from('notifications')
+    .select('*', { count: 'exact' })
+    .eq('recipient_id', user?.id)
+    .eq('is_read', false)
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  // Fetch recent notes for children
+  const { data: recentNotes } = await supabase
+    .from('student_notes')
+    .select('*, student:students(*), creator:profiles!student_notes_created_by_fkey(*)')
+    .in('student_id', childIds.length > 0 ? childIds : ['00000000-0000-0000-0000-000000000000'])
+    .in('note_type', ['parent', 'both'])
+    .order('created_at', { ascending: false })
+    .limit(5);
 
   // Calculate overall stats
   const stats = {
@@ -50,44 +118,80 @@ export default async function ParentDashboard() {
     (a) => a.status === 'absent' && new Date(a.date) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
   ) || [];
 
+  // Pending requests count
+  const pendingRequests = absenceRequests?.filter(r => r.status === 'pending').length || 0;
+
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Parent Dashboard</h1>
+          <h1 className="text-3xl font-bold">Welcome, {profile?.full_name?.split(' ')[0]}!</h1>
           <p className="text-muted-foreground mt-1">
-            Monitor your children&apos;s attendance
+            {formatDate(new Date())} • {profile?.school?.name}
           </p>
         </div>
-        <Link href="/parent/reports">
-          <Button className="gap-2">
-            View Full Reports
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/parent/notifications">
+            <Button variant="outline" className="gap-2 relative">
+              <Bell className="h-4 w-4" />
+              Notifications
+              {(unreadCount || 0) > 0 && (
+                <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 min-w-[20px]">
+                  {unreadCount}
+                </Badge>
+              )}
+            </Button>
+          </Link>
+          <Link href="/parent/requests/new">
+            <Button className="gap-2">
+              <Send className="h-4 w-4" />
+              Request Absence
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Alerts */}
-      {recentAbsences.length > 0 && (
-        <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-900/50">
-                <Bell className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-amber-800 dark:text-amber-200">
-                  Recent Absences
-                </h3>
-                <p className="text-sm text-amber-700 dark:text-amber-300">
-                  {recentAbsences.length} absence(s) in the last 7 days. View reports for details.
+      <div className="grid gap-4 sm:grid-cols-2">
+        {recentAbsences.length > 0 && (
+          <Card className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20">
+            <CardContent className="p-4 flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600" />
+              <div className="flex-1">
+                <p className="font-medium text-red-800 dark:text-red-200">
+                  {recentAbsences.length} Absence{recentAbsences.length !== 1 ? 's' : ''} This Week
+                </p>
+                <p className="text-sm text-red-600 dark:text-red-300">
+                  Click to view attendance details
                 </p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              <Link href="/parent/attendance">
+                <Button size="sm" variant="outline">View</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )}
+
+        {(unreadCount || 0) > 0 && (
+          <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
+            <CardContent className="p-4 flex items-center gap-3">
+              <Bell className="h-5 w-5 text-blue-600" />
+              <div className="flex-1">
+                <p className="font-medium text-blue-800 dark:text-blue-200">
+                  {unreadCount} Unread Notification{unreadCount !== 1 ? 's' : ''}
+                </p>
+                <p className="text-sm text-blue-600 dark:text-blue-300">
+                  From school administration
+                </p>
+              </div>
+              <Link href="/parent/notifications">
+                <Button size="sm" variant="outline">Read</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       {/* Overall Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -111,147 +215,281 @@ export default async function ParentDashboard() {
           iconColor="text-red-600"
         />
         <StatsCard
-          title="Days Late"
-          value={stats.late}
+          title="Pending Requests"
+          value={pendingRequests}
           icon="clock"
           iconColor="text-amber-600"
         />
       </div>
 
-      {/* Children Overview */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          Your Children
-        </h2>
+      {/* Main Content Grid */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Children Overview */}
+        <div className="lg:col-span-2">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <GraduationCap className="h-5 w-5" />
+            Your Children
+          </h2>
 
-        {children && children.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {children.map((child, i) => {
-              const childAttendance = allAttendance?.filter((a) => a.student_id === child.id) || [];
-              const childPresent = childAttendance.filter((a) => a.status === 'present' || a.status === 'late').length;
-              const childRate = calculateAttendancePercentage(childPresent, childAttendance.length);
-              const lastRecord = childAttendance[0];
+          {children && children.length > 0 ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {children.map((child, i) => {
+                const childAttendance = allAttendance?.filter((a) => a.student_id === child.id) || [];
+                const childPresent = childAttendance.filter((a) => a.status === 'present' || a.status === 'late').length;
+                const childRate = calculateAttendancePercentage(childPresent, childAttendance.length);
+                const lastRecord = childAttendance[0];
+                const childEval = evaluations?.find(e => e.student_id === child.id);
 
-              return (
-                <Card
-                  key={child.id}
-                  className="hover:shadow-lg transition-all duration-300 animate-fade-in"
-                  style={{ animationDelay: `${i * 100}ms` }}
-                >
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <Avatar fallback={child.full_name} size="lg" />
-                      <div>
-                        <CardTitle className="text-lg">{child.full_name}</CardTitle>
-                        <CardDescription>{child.class?.name || 'No class assigned'}</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {/* Attendance Rate */}
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="text-muted-foreground">Attendance Rate</span>
-                          <span className="font-semibold">{childRate}%</span>
-                        </div>
-                        <div className="h-2 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-violet-500 to-purple-600 rounded-full transition-all duration-500"
-                            style={{ width: `${childRate}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Last Status */}
-                      {lastRecord && (
-                        <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50">
-                          <span className="text-sm text-muted-foreground">
-                            {formatDate(lastRecord.date)}
-                          </span>
-                          <Badge
-                            variant={
-                              lastRecord.status === 'present'
-                                ? 'present'
-                                : lastRecord.status === 'late'
-                                ? 'late'
-                                : lastRecord.status === 'excused'
-                                ? 'excused'
-                                : 'absent'
-                            }
-                          >
-                            {lastRecord.status.charAt(0).toUpperCase() + lastRecord.status.slice(1)}
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        ) : (
-          <Card className="p-12 text-center">
-            <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No Children Linked</h3>
-            <p className="text-muted-foreground">
-              Please contact your school administrator to link your children to your account.
-            </p>
-          </Card>
-        )}
-      </div>
-
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Recent Activity
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {allAttendance && allAttendance.length > 0 ? (
-            <div className="space-y-2">
-              {allAttendance.slice(0, 10).map((record, i) => {
-                const child = children?.find((c) => c.id === record.student_id);
                 return (
-                  <div
-                    key={record.id}
-                    className="flex items-center justify-between py-3 px-4 rounded-lg bg-muted/30 animate-fade-in"
-                    style={{ animationDelay: `${i * 50}ms` }}
+                  <Card
+                    key={child.id}
+                    className="hover:shadow-lg transition-all duration-300 animate-fade-in"
+                    style={{ animationDelay: `${i * 100}ms` }}
                   >
-                    <div className="flex items-center gap-3">
-                      <Avatar fallback={child?.full_name || '?'} size="sm" />
-                      <div>
-                        <p className="font-medium text-sm">{child?.full_name}</p>
-                        <p className="text-xs text-muted-foreground">{formatDate(record.date)}</p>
+                    <CardHeader>
+                      <div className="flex items-center gap-3">
+                        <Avatar fallback={child.full_name} size="lg" />
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-lg truncate">{child.full_name}</CardTitle>
+                          <CardDescription>{child.class?.name || 'No class assigned'}</CardDescription>
+                        </div>
                       </div>
-                    </div>
-                    <Badge
-                      variant={
-                        record.status === 'present'
-                          ? 'present'
-                          : record.status === 'late'
-                          ? 'late'
-                          : record.status === 'excused'
-                          ? 'excused'
-                          : 'absent'
-                      }
-                    >
-                      {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                    </Badge>
-                  </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {/* Attendance Rate */}
+                        <div>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="text-muted-foreground">Attendance Rate</span>
+                            <span className="font-semibold">{childRate}%</span>
+                          </div>
+                          <div className="h-2 bg-muted rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-500 ${
+                                childRate >= 80 
+                                  ? 'bg-gradient-to-r from-emerald-500 to-green-500'
+                                  : childRate >= 60
+                                  ? 'bg-gradient-to-r from-amber-500 to-yellow-500'
+                                  : 'bg-gradient-to-r from-red-500 to-rose-500'
+                              }`}
+                              style={{ width: `${childRate}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Last Status */}
+                        {lastRecord && (
+                          <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50">
+                            <span className="text-sm text-muted-foreground">
+                              {formatDate(lastRecord.date)}
+                            </span>
+                            <Badge
+                              variant={
+                                lastRecord.status === 'present'
+                                  ? 'present'
+                                  : lastRecord.status === 'late'
+                                  ? 'late'
+                                  : lastRecord.status === 'excused'
+                                  ? 'excused'
+                                  : 'absent'
+                              }
+                            >
+                              {lastRecord.status.charAt(0).toUpperCase() + lastRecord.status.slice(1)}
+                            </Badge>
+                          </div>
+                        )}
+
+                        {/* Recent Evaluation */}
+                        {childEval && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-muted-foreground">
+                              {childEval.evaluation_type} evaluation: 
+                            </span>
+                            {childEval.grade && (
+                              <Badge variant="outline">{childEval.grade}%</Badge>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex gap-2 pt-2">
+                          <Link href={`/parent/attendance?child=${child.id}`} className="flex-1">
+                            <Button variant="outline" size="sm" className="w-full">
+                              Attendance
+                            </Button>
+                          </Link>
+                          <Link href={`/parent/requests/new?child=${child.id}`}>
+                            <Button variant="ghost" size="sm">
+                              <Send className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 );
               })}
             </div>
           ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              No attendance records yet.
-            </div>
+            <Card className="p-12 text-center">
+              <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No Children Linked</h3>
+              <p className="text-muted-foreground">
+                Please contact your school administrator to link your children to your account.
+              </p>
+            </Card>
           )}
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Absence Requests */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Send className="h-4 w-4" />
+                Absence Requests
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {absenceRequests && absenceRequests.length > 0 ? (
+                <div className="space-y-3">
+                  {absenceRequests.slice(0, 3).map((request) => (
+                    <div
+                      key={request.id}
+                      className="p-3 rounded-lg bg-muted/50"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{request.student?.full_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatDate(request.start_date)} - {formatDate(request.end_date)}
+                          </p>
+                        </div>
+                        <Badge
+                          variant={
+                            request.status === 'approved'
+                              ? 'present'
+                              : request.status === 'rejected'
+                              ? 'absent'
+                              : 'late'
+                          }
+                        >
+                          {request.status === 'pending' && <Clock className="h-3 w-3 mr-1" />}
+                          {request.status === 'approved' && <CheckCircle className="h-3 w-3 mr-1" />}
+                          {request.status === 'rejected' && <XCircle className="h-3 w-3 mr-1" />}
+                          {request.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                  <Link href="/parent/requests">
+                    <Button variant="outline" size="sm" className="w-full mt-2">
+                      View All Requests
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="text-center py-4 text-muted-foreground text-sm">
+                  No absence requests yet
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Recent Notes */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Recent Notes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {recentNotes && recentNotes.length > 0 ? (
+                <div className="space-y-3">
+                  {recentNotes.map((note) => (
+                    <div
+                      key={note.id}
+                      className={`p-3 rounded-lg ${
+                        note.is_read_by_parent ? 'bg-muted/30' : 'bg-blue-50 dark:bg-blue-950/20'
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        {!note.is_read_by_parent && (
+                          <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm">{note.title}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {note.student?.full_name} • {formatDate(note.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-4 text-muted-foreground text-sm">
+                  No notes from teachers
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="p-4 hover:shadow-lg transition-shadow">
+          <Link href="/parent/requests/new" className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-violet-100 dark:bg-violet-900/30">
+              <Send className="h-5 w-5 text-violet-600" />
+            </div>
+            <div>
+              <h3 className="font-medium">Submit Absence</h3>
+              <p className="text-xs text-muted-foreground">Request student absence</p>
+            </div>
+          </Link>
+        </Card>
+
+        <Card className="p-4 hover:shadow-lg transition-shadow">
+          <Link href="/parent/attendance" className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+              <Calendar className="h-5 w-5 text-emerald-600" />
+            </div>
+            <div>
+              <h3 className="font-medium">View Attendance</h3>
+              <p className="text-xs text-muted-foreground">Detailed records</p>
+            </div>
+          </Link>
+        </Card>
+
+        <Card className="p-4 hover:shadow-lg transition-shadow">
+          <Link href="/parent/evaluations" className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30">
+              <TrendingUp className="h-5 w-5 text-amber-600" />
+            </div>
+            <div>
+              <h3 className="font-medium">Evaluations</h3>
+              <p className="text-xs text-muted-foreground">Grades & progress</p>
+            </div>
+          </Link>
+        </Card>
+
+        <Card className="p-4 hover:shadow-lg transition-shadow">
+          <Link href="/parent/issues/new" className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
+              <AlertCircle className="h-5 w-5 text-red-600" />
+            </div>
+            <div>
+              <h3 className="font-medium">Report Issue</h3>
+              <p className="text-xs text-muted-foreground">Contact school</p>
+            </div>
+          </Link>
+        </Card>
+      </div>
     </div>
   );
 }

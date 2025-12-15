@@ -37,11 +37,19 @@ export default function LoginPage() {
         // Get user profile to determine redirect
         const { data: profile } = await supabase
           .from('profiles')
-          .select('role')
+          .select('role, is_approved')
           .eq('id', data.user.id)
           .single();
 
+        // Redirect based on role
         switch (profile?.role) {
+          case 'moe_admin':
+            router.push('/moe');
+            break;
+          case 'school_admin':
+          case 'supervisor':
+            router.push('/school');
+            break;
           case 'teacher':
             router.push('/teacher');
             break;
@@ -55,7 +63,7 @@ export default function LoginPage() {
             router.push('/');
         }
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred');
     } finally {
       setLoading(false);
@@ -63,7 +71,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <div className="w-full max-w-md">
         {/* Back to Home */}
         <Link
@@ -80,7 +88,7 @@ export default function LoginPage() {
               <GraduationCap className="h-8 w-8 text-white" />
             </div>
             <CardTitle className="text-2xl">Welcome back</CardTitle>
-            <CardDescription>Sign in to your AttendEase account</CardDescription>
+            <CardDescription>Sign in to EduTech</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
@@ -134,10 +142,10 @@ export default function LoginPage() {
         <div className="mt-6 p-4 rounded-xl bg-muted/50 animate-fade-in animate-stagger-1">
           <p className="text-sm font-medium text-center mb-3">Demo Accounts</p>
           <div className="space-y-2 text-xs text-muted-foreground">
-            {/* <div className="flex justify-between">
-              <span>Admin:</span>
+            <div className="flex justify-between">
+              <span>School Admin:</span>
               <span className="font-mono">admin@demo.com / ASDasd@123</span>
-            </div> */}
+            </div>
             <div className="flex justify-between">
               <span>Teacher:</span>
               <span className="font-mono">teacher@demo.com / ASDasd@123</span>
@@ -156,4 +164,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

@@ -8,19 +8,44 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { GraduationCap, Mail, Lock, User, ArrowLeft } from 'lucide-react';
+import { GraduationCap, Mail, Lock, User, ArrowLeft, Building2, Phone, Info } from 'lucide-react';
+import type { School } from '@/lib/types';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [schools, setSchools] = React.useState<School[]>([]);
   const [formData, setFormData] = React.useState({
     fullName: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
-    role: 'student',
+    role: 'parent', // Default to parent for public registration
+    schoolId: '',
   });
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [loadingSchools, setLoadingSchools] = React.useState(true);
+
+  // Fetch available schools
+  React.useEffect(() => {
+    const fetchSchools = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('schools')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+      
+      setSchools(data || []);
+      if (data && data.length > 0) {
+        setFormData(prev => ({ ...prev, schoolId: data[0].id }));
+      }
+      setLoadingSchools(false);
+    };
+
+    fetchSchools();
+  }, []);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +61,11 @@ export default function RegisterPage() {
       return;
     }
 
+    if (!formData.schoolId) {
+      setError('Please select a school');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -47,6 +77,8 @@ export default function RegisterPage() {
           data: {
             full_name: formData.fullName,
             role: formData.role,
+            school_id: formData.schoolId,
+            phone: formData.phone,
           },
         },
       });
@@ -57,22 +89,24 @@ export default function RegisterPage() {
       }
 
       if (data.user) {
-        // Redirect based on role
-        switch (formData.role) {
-          case 'teacher':
-            router.push('/teacher');
-            break;
-          case 'parent':
-            router.push('/parent');
-            break;
-          case 'student':
-            router.push('/student');
-            break;
-          default:
-            router.push('/');
+        // For parents, they need approval so show message
+        if (formData.role === 'parent') {
+          router.push('/register/pending');
+        } else {
+          // Redirect based on role
+          switch (formData.role) {
+            case 'teacher':
+              router.push('/teacher');
+              break;
+            case 'student':
+              router.push('/student');
+              break;
+            default:
+              router.push('/');
+          }
         }
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred');
     } finally {
       setLoading(false);
@@ -87,7 +121,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 py-12">
+    <div className="min-h-screen flex items-center justify-center p-4 py-12 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <div className="w-full max-w-md">
         {/* Back to Home */}
         <Link
@@ -104,7 +138,7 @@ export default function RegisterPage() {
               <GraduationCap className="h-8 w-8 text-white" />
             </div>
             <CardTitle className="text-2xl">Create an account</CardTitle>
-            <CardDescription>Get started with AttendEase</CardDescription>
+            <CardDescription>Get started with EduTech</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleRegister} className="space-y-4">
@@ -132,7 +166,7 @@ export default function RegisterPage() {
                 <Input
                   type="email"
                   name="email"
-                  placeholder="you@school.edu"
+                  placeholder="you@email.com"
                   value={formData.email}
                   onChange={handleChange}
                   icon={<Mail className="h-4 w-4" />}
@@ -141,12 +175,47 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
+                <label className="text-sm font-medium">Phone Number</label>
+                <Input
+                  type="tel"
+                  name="phone"
+                  placeholder="+1 234 567 8900"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  icon={<Phone className="h-4 w-4" />}
+                />
+              </div>
+
+              <div className="space-y-2">
                 <label className="text-sm font-medium">I am a...</label>
                 <Select name="role" value={formData.role} onChange={handleChange}>
-                  <option value="student">Student</option>
-                  <option value="teacher">Teacher</option>
                   <option value="parent">Parent</option>
+                  <option value="student">Student</option>
                 </Select>
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Info className="h-3 w-3" />
+                  Teachers and admins are created by school administrators
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select School</label>
+                {loadingSchools ? (
+                  <div className="h-10 bg-muted animate-pulse rounded-lg" />
+                ) : schools.length > 0 ? (
+                  <Select name="schoolId" value={formData.schoolId} onChange={handleChange}>
+                    {schools.map((school) => (
+                      <option key={school.id} value={school.id}>
+                        {school.name}
+                      </option>
+                    ))}
+                  </Select>
+                ) : (
+                  <div className="p-3 rounded-lg bg-muted text-sm text-muted-foreground flex items-center gap-2">
+                    <Building2 className="h-4 w-4" />
+                    No schools available yet
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -175,7 +244,15 @@ export default function RegisterPage() {
                 />
               </div>
 
-              <Button type="submit" className="w-full" loading={loading}>
+              {formData.role === 'parent' && (
+                <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 text-sm">
+                  <p className="text-amber-800 dark:text-amber-200">
+                    <strong>Note:</strong> Parent accounts require approval from the school before you can access the system.
+                  </p>
+                </div>
+              )}
+
+              <Button type="submit" className="w-full" loading={loading} disabled={schools.length === 0}>
                 Create Account
               </Button>
             </form>
@@ -194,4 +271,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

@@ -17,7 +17,7 @@ export default async function StudentLayout({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select('*, school:schools(*)')
     .eq('id', user.id)
     .single();
 
@@ -25,13 +25,19 @@ export default async function StudentLayout({
     redirect('/');
   }
 
+  const navItems = [
+    { href: '/student', label: 'Check In', icon: 'clipboard-check' },
+    { href: '/student/attendance', label: 'My Attendance', icon: 'calendar' },
+    { href: '/student/schedule', label: 'Schedule', icon: 'clock' },
+    { href: '/student/evaluations', label: 'Evaluations', icon: 'bar-chart-3' },
+  ];
+
   return (
-    <div className="min-h-screen">
-      <NavBar profile={profile} />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+      <NavBar user={profile} navItems={navItems} schoolName={profile.school?.name} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
     </div>
   );
 }
-

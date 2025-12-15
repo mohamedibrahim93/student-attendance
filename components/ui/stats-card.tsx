@@ -14,6 +14,8 @@ import {
   BookOpen,
   QrCode,
   BarChart3,
+  GraduationCap,
+  Building2,
 } from 'lucide-react';
 
 // Map of icon names to components
@@ -29,6 +31,8 @@ const iconMap = {
   'book-open': BookOpen,
   'qr-code': QrCode,
   'bar-chart': BarChart3,
+  'graduation-cap': GraduationCap,
+  'building-2': Building2,
 } as const;
 
 type IconName = keyof typeof iconMap;
