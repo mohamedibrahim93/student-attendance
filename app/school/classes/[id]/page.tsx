@@ -203,7 +203,7 @@ export default function ClassDetailPage() {
               <label className="text-sm font-medium">Homeroom Teacher</label>
               <Select
                 value={classData.homeroom_teacher_id || ''}
-                onChange={(e) => handleUpdateClass({ homeroom_teacher_id: e.target.value || null })}
+                onChange={(e) => handleUpdateClass({ homeroom_teacher_id: e.target.value || undefined })}
               >
                 <option value="">No Teacher Assigned</option>
                 {teachers.map((teacher) => (

@@ -82,7 +82,7 @@ export default function SchoolIssuesPage() {
     const updates: Partial<Issue> = { status };
     if (status === 'resolved') {
       updates.resolved_at = new Date().toISOString();
-      updates.resolution_notes = notes || null;
+      updates.resolution_notes = notes || undefined;
     }
     if (status === 'in_progress' && user) {
       updates.assigned_to = user.id;

@@ -46,7 +46,7 @@ export default function NewTeacherIssuePage() {
           .select('class_id')
           .eq('teacher_id', user.id);
 
-        const classIds = [...new Set(assignments?.map((a) => a.class_id) || [])];
+        const classIds = Array.from(new Set(assignments?.map((a) => a.class_id) || []));
 
         if (classIds.length > 0) {
           const { data: classData } = await supabase

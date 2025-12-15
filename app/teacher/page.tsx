@@ -36,7 +36,7 @@ export default async function TeacherDashboard() {
     .eq('teacher_id', user?.id);
 
   // Fetch unique classes
-  const classIds = [...new Set(assignments?.map(a => a.class_id) || [])];
+  const classIds = Array.from(new Set(assignments?.map(a => a.class_id) || []));
   
   const { data: classes } = await supabase
     .from('classes')
