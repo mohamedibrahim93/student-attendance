@@ -3,16 +3,18 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { GraduationCap, Mail, Lock, User, ArrowLeft, Building2, Phone, Info } from 'lucide-react';
+import { GraduationCap, Mail, Lock, User, ArrowLeft, ArrowRight, Building2, Phone, Info } from 'lucide-react';
 import type { School } from '@/lib/types';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const t = useTranslations();
   const [schools, setSchools] = React.useState<School[]>([]);
   const [formData, setFormData] = React.useState({
     fullName: '',
@@ -26,6 +28,10 @@ export default function RegisterPage() {
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [loadingSchools, setLoadingSchools] = React.useState(true);
+
+  // Get direction from document
+  const isRTL = typeof document !== 'undefined' && document.documentElement.dir === 'rtl';
+  const ArrowBack = isRTL ? ArrowRight : ArrowLeft;
 
   // Fetch available schools
   React.useEffect(() => {
@@ -52,17 +58,17 @@ export default function RegisterPage() {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.passwordsDoNotMatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('auth.passwordMinLength'));
       return;
     }
 
     if (!formData.schoolId) {
-      setError('Please select a school');
+      setError(t('register.pleaseSelectSchool'));
       return;
     }
 
@@ -107,7 +113,7 @@ export default function RegisterPage() {
         }
       }
     } catch {
-      setError('An unexpected error occurred');
+      setError(t('common.unexpectedError'));
     } finally {
       setLoading(false);
     }
@@ -128,8 +134,8 @@ export default function RegisterPage() {
           href="/"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Back to home
+          <ArrowBack className="h-4 w-4" />
+          {t('common.backToHome')}
         </Link>
 
         <Card className="border-gray-200/50 dark:border-gray-800/50 shadow-xl animate-scale-in">
@@ -137,8 +143,8 @@ export default function RegisterPage() {
             <div className="mx-auto p-3 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 w-fit mb-4">
               <GraduationCap className="h-8 w-8 text-white" />
             </div>
-            <CardTitle className="text-2xl">Create an account</CardTitle>
-            <CardDescription>Get started with EduTech</CardDescription>
+            <CardTitle className="text-2xl">{t('auth.createAccount')}</CardTitle>
+            <CardDescription>{t('auth.getStartedWith')}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleRegister} className="space-y-4">
@@ -149,11 +155,11 @@ export default function RegisterPage() {
               )}
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Full Name</label>
+                <label className="text-sm font-medium">{t('common.fullName')}</label>
                 <Input
                   type="text"
                   name="fullName"
-                  placeholder="John Doe"
+                  placeholder={t('auth.namePlaceholder')}
                   value={formData.fullName}
                   onChange={handleChange}
                   icon={<User className="h-4 w-4" />}
@@ -162,11 +168,11 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
+                <label className="text-sm font-medium">{t('common.email')}</label>
                 <Input
                   type="email"
                   name="email"
-                  placeholder="you@email.com"
+                  placeholder={t('auth.emailPlaceholder')}
                   value={formData.email}
                   onChange={handleChange}
                   icon={<Mail className="h-4 w-4" />}
@@ -175,11 +181,11 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Phone Number</label>
+                <label className="text-sm font-medium">{t('common.phone')}</label>
                 <Input
                   type="tel"
                   name="phone"
-                  placeholder="+1 234 567 8900"
+                  placeholder={t('auth.phonePlaceholder')}
                   value={formData.phone}
                   onChange={handleChange}
                   icon={<Phone className="h-4 w-4" />}
@@ -187,19 +193,19 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">I am a...</label>
+                <label className="text-sm font-medium">{t('register.iAmA')}</label>
                 <Select name="role" value={formData.role} onChange={handleChange}>
-                  <option value="parent">Parent</option>
-                  <option value="student">Student</option>
+                  <option value="parent">{t('roles.parent')}</option>
+                  <option value="student">{t('roles.student')}</option>
                 </Select>
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <Info className="h-3 w-3" />
-                  Teachers and admins are created by school administrators
+                  {t('register.adminNote')}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Select School</label>
+                <label className="text-sm font-medium">{t('register.selectSchool')}</label>
                 {loadingSchools ? (
                   <div className="h-10 bg-muted animate-pulse rounded-lg" />
                 ) : schools.length > 0 ? (
@@ -213,17 +219,17 @@ export default function RegisterPage() {
                 ) : (
                   <div className="p-3 rounded-lg bg-muted text-sm text-muted-foreground flex items-center gap-2">
                     <Building2 className="h-4 w-4" />
-                    No schools available yet
+                    {t('register.noSchoolsAvailable')}
                   </div>
                 )}
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Password</label>
+                <label className="text-sm font-medium">{t('common.password')}</label>
                 <Input
                   type="password"
                   name="password"
-                  placeholder="••••••••"
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={formData.password}
                   onChange={handleChange}
                   icon={<Lock className="h-4 w-4" />}
@@ -232,11 +238,11 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Confirm Password</label>
+                <label className="text-sm font-medium">{t('common.confirmPassword')}</label>
                 <Input
                   type="password"
                   name="confirmPassword"
-                  placeholder="••••••••"
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   icon={<Lock className="h-4 w-4" />}
@@ -247,21 +253,21 @@ export default function RegisterPage() {
               {formData.role === 'parent' && (
                 <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 text-sm">
                   <p className="text-amber-800 dark:text-amber-200">
-                    <strong>Note:</strong> Parent accounts require approval from the school before you can access the system.
+                    <strong>{t('common.note')}:</strong> {t('register.parentApprovalNote')}
                   </p>
                 </div>
               )}
 
               <Button type="submit" className="w-full" loading={loading} disabled={schools.length === 0}>
-                Create Account
+                {t('auth.createAccount')}
               </Button>
             </form>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                Already have an account?{' '}
+                {t('auth.alreadyHaveAccount')}{' '}
                 <Link href="/login" className="text-primary hover:underline font-medium">
-                  Sign in
+                  {t('auth.signIn')}
                 </Link>
               </p>
             </div>

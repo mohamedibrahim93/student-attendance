@@ -3,10 +3,12 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import {
   GraduationCap,
   LayoutDashboard,
@@ -51,6 +53,28 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   'send': Send,
 };
 
+// Navigation label keys mapping
+const navLabelKeys: Record<string, string> = {
+  'Dashboard': 'nav.dashboard',
+  'Schools': 'nav.schools',
+  'Classes': 'nav.classes',
+  'Students': 'nav.students',
+  'Teachers': 'nav.teachers',
+  'Subjects': 'nav.subjects',
+  'Attendance': 'nav.attendance',
+  'Requests': 'nav.requests',
+  'Reports': 'nav.reports',
+  'Announcements': 'nav.announcements',
+  'Notifications': 'nav.notifications',
+  'Schedule': 'nav.schedule',
+  'Notes': 'nav.notes',
+  'Leave Requests': 'nav.leaveRequests',
+  'Absence Requests': 'nav.absenceRequests',
+  'Evaluations': 'nav.evaluations',
+  'Check In': 'nav.checkIn',
+  'My Attendance': 'nav.myAttendance',
+};
+
 interface NavItem {
   href: string;
   label: string;
@@ -62,6 +86,7 @@ interface NavBarProps {
   user: Profile;
   navItems?: NavItem[];
   schoolName?: string;
+  locale?: string;
 }
 
 // Default navigation items per role
@@ -104,9 +129,10 @@ const defaultNavItems: Record<string, NavItem[]> = {
   ],
 };
 
-export function NavBar({ user, navItems, schoolName }: NavBarProps) {
+export function NavBar({ user, navItems, schoolName, locale = 'ar' }: NavBarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const t = useTranslations();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const links = navItems || defaultNavItems[user.role] || [];
@@ -142,10 +168,9 @@ export function NavBar({ user, navItems, schoolName }: NavBarProps) {
     }
   };
 
-  const formatRole = (role: string) => {
-    return role.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+  const getTranslatedLabel = (label: string) => {
+    const key = navLabelKeys[label];
+    return key ? t(key) : label;
   };
 
   return (
@@ -159,7 +184,7 @@ export function NavBar({ user, navItems, schoolName }: NavBarProps) {
             </div>
             <div className="hidden sm:block">
               <span className="text-xl font-bold gradient-text">
-                EduTech
+                {t('common.appName')}
               </span>
               {schoolName && (
                 <span className="text-xs text-muted-foreground block -mt-1">
@@ -188,7 +213,7 @@ export function NavBar({ user, navItems, schoolName }: NavBarProps) {
                   )}
                 >
                   <IconComponent className="h-4 w-4" />
-                  {link.label}
+                  {getTranslatedLabel(link.label)}
                   {link.badge && link.badge > 0 && (
                     <Badge variant="destructive" className="h-5 min-w-[20px] px-1.5 text-xs">
                       {link.badge}
@@ -202,21 +227,24 @@ export function NavBar({ user, navItems, schoolName }: NavBarProps) {
           {/* User Menu */}
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-3">
-              <div className="text-right">
+              <div className="text-right rtl:text-left">
                 <p className="text-sm font-medium">{user.full_name}</p>
                 <span className={cn('text-xs px-2 py-0.5 rounded-full', getRoleBadgeColor())}>
-                  {formatRole(user.role)}
+                  {t(`roles.${user.role}`)}
                 </span>
               </div>
               <Avatar fallback={user.full_name} src={user.avatar_url} />
             </div>
+            
+            {/* Language Switcher */}
+            <LanguageSwitcher currentLocale={locale} />
             
             {/* Notifications Bell */}
             <Button
               variant="ghost"
               size="icon"
               className="text-muted-foreground hover:text-foreground relative"
-              title="Notifications"
+              title={t('nav.notifications')}
             >
               <Bell className="h-4 w-4" />
             </Button>
@@ -226,7 +254,7 @@ export function NavBar({ user, navItems, schoolName }: NavBarProps) {
               size="icon"
               onClick={handleLogout}
               className="text-muted-foreground hover:text-destructive"
-              title="Logout"
+              title={t('auth.logout')}
             >
               <LogOut className="h-4 w-4" />
             </Button>
@@ -254,7 +282,7 @@ export function NavBar({ user, navItems, schoolName }: NavBarProps) {
               <div>
                 <p className="font-medium">{user.full_name}</p>
                 <span className={cn('text-xs px-2 py-0.5 rounded-full', getRoleBadgeColor())}>
-                  {formatRole(user.role)}
+                  {t(`roles.${user.role}`)}
                 </span>
               </div>
             </div>
@@ -276,9 +304,9 @@ export function NavBar({ user, navItems, schoolName }: NavBarProps) {
                   )}
                 >
                   <IconComponent className="h-5 w-5" />
-                  {link.label}
+                  {getTranslatedLabel(link.label)}
                   {link.badge && link.badge > 0 && (
-                    <Badge variant="destructive" className="ml-auto">
+                    <Badge variant="destructive" className="ms-auto">
                       {link.badge}
                     </Badge>
                   )}

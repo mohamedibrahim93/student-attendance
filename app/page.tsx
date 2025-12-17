@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import {
   GraduationCap,
   QrCode,
@@ -8,6 +10,7 @@ import {
   Shield,
   Zap,
   ArrowRight,
+  ArrowLeft,
   Building2,
   Bell,
   ClipboardCheck,
@@ -15,7 +18,12 @@ import {
   Calendar,
 } from 'lucide-react';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const locale = await getLocale();
+  const t = await getTranslations();
+  const isRTL = locale === 'ar';
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       {/* Header */}
@@ -26,14 +34,15 @@ export default function HomePage() {
               <div className="p-2 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600">
                 <GraduationCap className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-bold gradient-text">EduTech</span>
+              <span className="text-xl font-bold gradient-text">{t('common.appName')}</span>
             </div>
             <div className="flex items-center gap-4">
+              <LanguageSwitcher currentLocale={locale} />
               <Link href="/login">
-                <Button variant="ghost">Sign In</Button>
+                <Button variant="ghost">{t('auth.signIn')}</Button>
               </Link>
               <Link href="/register">
-                <Button>Get Started</Button>
+                <Button>{t('home.startFreeTrial')}</Button>
               </Link>
             </div>
           </div>
@@ -47,27 +56,24 @@ export default function HomePage() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 animate-fade-in">
               <Building2 className="h-4 w-4" />
-              Comprehensive School Management System
+              {t('home.heroTagline')}
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight animate-slide-up">
-              <span className="gradient-text">Smart Education</span>
-              <br />
-              Management Platform
+              <span className="gradient-text">{t('home.heroTitle')}</span>
             </h1>
             <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto animate-slide-up animate-stagger-1">
-              From Ministry of Education to classrooms. Manage schools, track attendance, 
-              communicate with parents, and streamline educational administration.
+              {t('home.heroSubtitle')}
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up animate-stagger-2">
               <Link href="/register">
                 <Button size="xl" className="gap-2 group">
-                  Start Free Trial
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  {t('home.startFreeTrial')}
+                  <ArrowIcon className="h-4 w-4 group-hover:translate-x-1 transition-transform rtl:group-hover:-translate-x-1" />
                 </Button>
               </Link>
               <Link href="/login">
                 <Button variant="outline" size="xl">
-                  Sign In
+                  {t('auth.signIn')}
                 </Button>
               </Link>
             </div>
@@ -82,16 +88,16 @@ export default function HomePage() {
                 <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 w-fit mb-4">
                   <Building2 className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Ministry of Education</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('home.cards.moe.title')}</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Oversee all schools, view reports, track performance, and send announcements.
+                  {t('home.cards.moe.description')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
-                    Multi-School Management
+                    {t('home.cards.moe.tag1')}
                   </span>
                   <span className="text-xs px-2 py-1 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
-                    Analytics
+                    {t('home.cards.moe.tag2')}
                   </span>
                 </div>
               </div>
@@ -101,16 +107,16 @@ export default function HomePage() {
                 <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 w-fit mb-4">
                   <Users className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">School Administration</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('home.cards.school.title')}</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Manage classes, teachers, students, and approve parent registrations.
+                  {t('home.cards.school.description')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                    Request Approval
+                    {t('home.cards.school.tag1')}
                   </span>
                   <span className="text-xs px-2 py-1 rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">
-                    Reports
+                    {t('home.cards.school.tag2')}
                   </span>
                 </div>
               </div>
@@ -120,16 +126,16 @@ export default function HomePage() {
                 <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 w-fit mb-4">
                   <ClipboardCheck className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Teachers</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('home.cards.teacher.title')}</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Take attendance via QR codes, add student notes, and manage your schedule.
+                  {t('home.cards.teacher.description')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <span className="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                    QR Attendance
+                    {t('home.cards.teacher.tag1')}
                   </span>
                   <span className="text-xs px-2 py-1 rounded-full bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300">
-                    Student Notes
+                    {t('home.cards.teacher.tag2')}
                   </span>
                 </div>
               </div>
@@ -143,10 +149,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold">
-              Complete <span className="gradient-text">Education Management</span> Solution
+              <span className="gradient-text">{t('home.features.title')}</span>
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              A unified platform for MoE, schools, teachers, parents, and students.
+              {t('home.features.subtitle')}
             </p>
           </div>
 
@@ -154,33 +160,33 @@ export default function HomePage() {
             {[
               {
                 icon: QrCode,
-                title: 'QR Code Attendance',
-                description: 'Teachers generate time-limited QR codes. Students scan to check in instantly.',
+                title: t('home.features.qrAttendance.title'),
+                description: t('home.features.qrAttendance.description'),
               },
               {
                 icon: Users,
-                title: 'Multi-Level Hierarchy',
-                description: 'MoE → Schools → Classes. Proper role-based access for everyone.',
+                title: t('home.features.multiLevel.title'),
+                description: t('home.features.multiLevel.description'),
               },
               {
                 icon: Send,
-                title: 'Absence Request Workflow',
-                description: 'Parents submit requests, schools approve or reject with notifications.',
+                title: t('home.features.absenceWorkflow.title'),
+                description: t('home.features.absenceWorkflow.description'),
               },
               {
                 icon: Bell,
-                title: 'Instant Notifications',
-                description: 'Alerts for absences, announcements, evaluations, and request updates.',
+                title: t('home.features.notifications.title'),
+                description: t('home.features.notifications.description'),
               },
               {
                 icon: Calendar,
-                title: 'Subject Schedules',
-                description: 'Track attendance per subject with teacher assignments and time slots.',
+                title: t('home.features.schedules.title'),
+                description: t('home.features.schedules.description'),
               },
               {
                 icon: BarChart3,
-                title: 'Comprehensive Reports',
-                description: 'Attendance rates, evaluations, and performance analytics at all levels.',
+                title: t('home.features.reports.title'),
+                description: t('home.features.reports.description'),
               },
             ].map((feature, i) => (
               <div
@@ -204,7 +210,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold">
-              Designed for <span className="gradient-text">Every Stakeholder</span>
+              <span className="gradient-text">{t('home.stakeholders.title')}</span>
             </h2>
           </div>
 
@@ -215,24 +221,24 @@ export default function HomePage() {
                 <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30">
                   <Users className="h-5 w-5 text-amber-600" />
                 </div>
-                For Parents
+                {t('home.stakeholders.forParents')}
               </h3>
               <ul className="space-y-3 text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <Shield className="h-4 w-4 text-amber-500" />
-                  Receive instant absence alerts
+                  {t('home.stakeholders.parentFeatures.alerts')}
                 </li>
                 <li className="flex items-center gap-2">
                   <Send className="h-4 w-4 text-amber-500" />
-                  Submit absence requests online
+                  {t('home.stakeholders.parentFeatures.requests')}
                 </li>
                 <li className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4 text-amber-500" />
-                  View evaluations and progress reports
+                  {t('home.stakeholders.parentFeatures.evaluations')}
                 </li>
                 <li className="flex items-center gap-2">
                   <Bell className="h-4 w-4 text-amber-500" />
-                  Get notes from teachers
+                  {t('home.stakeholders.parentFeatures.notes')}
                 </li>
               </ul>
             </div>
@@ -243,24 +249,24 @@ export default function HomePage() {
                 <div className="p-2 rounded-lg bg-cyan-100 dark:bg-cyan-900/30">
                   <GraduationCap className="h-5 w-5 text-cyan-600" />
                 </div>
-                For Students
+                {t('home.stakeholders.forStudents')}
               </h3>
               <ul className="space-y-3 text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <QrCode className="h-4 w-4 text-cyan-500" />
-                  Quick QR code check-in
+                  {t('home.stakeholders.studentFeatures.qrCheckIn')}
                 </li>
                 <li className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-cyan-500" />
-                  View class schedules
+                  {t('home.stakeholders.studentFeatures.schedule')}
                 </li>
                 <li className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4 text-cyan-500" />
-                  Track attendance history
+                  {t('home.stakeholders.studentFeatures.history')}
                 </li>
                 <li className="flex items-center gap-2">
                   <Zap className="h-4 w-4 text-cyan-500" />
-                  See evaluations and grades
+                  {t('home.stakeholders.studentFeatures.grades')}
                 </li>
               </ul>
             </div>
@@ -275,15 +281,15 @@ export default function HomePage() {
             <div className="absolute -inset-4 bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 rounded-3xl opacity-10 blur-2xl" />
             <div className="relative p-12 rounded-3xl bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-800/50">
               <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                Ready to transform your education system?
+                {t('home.cta.title')}
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
-                Join schools already using EduTech to streamline administration and keep everyone connected.
+                {t('home.cta.subtitle')}
               </p>
               <Link href="/register">
                 <Button size="xl" className="gap-2">
-                  Get Started Free
-                  <ArrowRight className="h-4 w-4" />
+                  {t('home.getStartedFree')}
+                  <ArrowIcon className="h-4 w-4" />
                 </Button>
               </Link>
             </div>
@@ -299,10 +305,10 @@ export default function HomePage() {
               <div className="p-2 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600">
                 <GraduationCap className="h-4 w-4 text-white" />
               </div>
-              <span className="font-semibold">EduTech</span>
+              <span className="font-semibold">{t('common.appName')}</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} EduTech. All rights reserved.
+              {t('home.footer.copyright', { year: new Date().getFullYear() })}
             </p>
           </div>
         </div>

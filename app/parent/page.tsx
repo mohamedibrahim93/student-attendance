@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { StatsCard } from '@/components/ui/stats-card';
@@ -9,6 +10,7 @@ import {
   Users,
   Calendar,
   ArrowRight,
+  ArrowLeft,
   Bell,
   Send,
   FileText,
@@ -24,6 +26,10 @@ import { formatDate, calculateAttendancePercentage } from '@/lib/utils';
 export default async function ParentDashboard() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const t = await getTranslations();
+  const locale = await getLocale();
+  const isRTL = locale === 'ar';
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   // Get parent profile
   const { data: profile } = await supabase
@@ -39,13 +45,12 @@ export default async function ParentDashboard() {
         <div className="p-4 rounded-full bg-amber-100 dark:bg-amber-900/30 w-fit mx-auto mb-6">
           <Clock className="h-12 w-12 text-amber-600" />
         </div>
-        <h1 className="text-2xl font-bold mb-2">Account Pending Approval</h1>
+        <h1 className="text-2xl font-bold mb-2">{t('accountPending.title')}</h1>
         <p className="text-muted-foreground mb-6">
-          Your account is awaiting approval from the school administration.
-          You will be notified once your account is approved.
+          {t('accountPending.description')}
         </p>
         <p className="text-sm text-muted-foreground">
-          School: {profile?.school?.name || 'Unknown'}
+          {t('accountPending.school')}: {profile?.school?.name || t('common.noData')}
         </p>
       </div>
     );
@@ -126,18 +131,18 @@ export default async function ParentDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Welcome, {profile?.full_name?.split(' ')[0]}!</h1>
+          <h1 className="text-3xl font-bold">{t('dashboard.welcome', { name: profile?.full_name?.split(' ')[0] || '' })}</h1>
           <p className="text-muted-foreground mt-1">
-            {formatDate(new Date())} • {profile?.school?.name}
+            {formatDate(new Date(), locale)} • {profile?.school?.name}
           </p>
         </div>
         <div className="flex gap-2">
           <Link href="/parent/notifications">
             <Button variant="outline" className="gap-2 relative">
               <Bell className="h-4 w-4" />
-              Notifications
+              {t('nav.notifications')}
               {(unreadCount || 0) > 0 && (
-                <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 min-w-[20px]">
+                <Badge variant="destructive" className="absolute -top-2 -end-2 h-5 min-w-[20px]">
                   {unreadCount}
                 </Badge>
               )}
@@ -146,7 +151,7 @@ export default async function ParentDashboard() {
           <Link href="/parent/requests/new">
             <Button className="gap-2">
               <Send className="h-4 w-4" />
-              Request Absence
+              {t('requests.requestAbsence')}
             </Button>
           </Link>
         </div>
@@ -160,14 +165,16 @@ export default async function ParentDashboard() {
               <AlertCircle className="h-5 w-5 text-red-600" />
               <div className="flex-1">
                 <p className="font-medium text-red-800 dark:text-red-200">
-                  {recentAbsences.length} Absence{recentAbsences.length !== 1 ? 's' : ''} This Week
+                  {recentAbsences.length === 1
+                    ? t('alerts.absenceThisWeek')
+                    : t('alerts.absencesThisWeek', { count: recentAbsences.length || 0 })}
                 </p>
                 <p className="text-sm text-red-600 dark:text-red-300">
-                  Click to view attendance details
+                  {t('alerts.clickToView')}
                 </p>
               </div>
               <Link href="/parent/attendance">
-                <Button size="sm" variant="outline">View</Button>
+                <Button size="sm" variant="outline">{t('common.view')}</Button>
               </Link>
             </CardContent>
           </Card>
@@ -179,14 +186,16 @@ export default async function ParentDashboard() {
               <Bell className="h-5 w-5 text-blue-600" />
               <div className="flex-1">
                 <p className="font-medium text-blue-800 dark:text-blue-200">
-                  {unreadCount} Unread Notification{unreadCount !== 1 ? 's' : ''}
+                  {unreadCount === 1
+                    ? t('alerts.unreadNotification')
+                    : t('alerts.unreadNotifications', { count: unreadCount || 0 })}
                 </p>
                 <p className="text-sm text-blue-600 dark:text-blue-300">
-                  From school administration
+                  {t('alerts.fromSchoolAdmin')}
                 </p>
               </div>
               <Link href="/parent/notifications">
-                <Button size="sm" variant="outline">Read</Button>
+                <Button size="sm" variant="outline">{t('common.read')}</Button>
               </Link>
             </CardContent>
           </Card>
@@ -196,26 +205,26 @@ export default async function ParentDashboard() {
       {/* Overall Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Overall Attendance"
+          title={t('stats.overallAttendance')}
           value={`${attendanceRate}%`}
           icon="trending-up"
           iconColor="text-violet-600"
-          description="All children combined"
+          description={t('stats.allChildrenCombined')}
         />
         <StatsCard
-          title="Days Present"
+          title={t('stats.daysPresent')}
           value={stats.present}
           icon="check-circle"
           iconColor="text-emerald-600"
         />
         <StatsCard
-          title="Days Absent"
+          title={t('stats.daysAbsent')}
           value={stats.absent}
           icon="x-circle"
           iconColor="text-red-600"
         />
         <StatsCard
-          title="Pending Requests"
+          title={t('stats.pendingRequests')}
           value={pendingRequests}
           icon="clock"
           iconColor="text-amber-600"
@@ -228,7 +237,7 @@ export default async function ParentDashboard() {
         <div className="lg:col-span-2">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <GraduationCap className="h-5 w-5" />
-            Your Children
+            {t('students.yourChildren')}
           </h2>
 
           {children && children.length > 0 ? (
@@ -251,7 +260,7 @@ export default async function ParentDashboard() {
                         <Avatar fallback={child.full_name} size="lg" />
                         <div className="flex-1 min-w-0">
                           <CardTitle className="text-lg truncate">{child.full_name}</CardTitle>
-                          <CardDescription>{child.class?.name || 'No class assigned'}</CardDescription>
+                          <CardDescription>{child.class?.name || t('students.noClassAssigned')}</CardDescription>
                         </div>
                       </div>
                     </CardHeader>
@@ -260,7 +269,7 @@ export default async function ParentDashboard() {
                         {/* Attendance Rate */}
                         <div>
                           <div className="flex justify-between text-sm mb-1">
-                            <span className="text-muted-foreground">Attendance Rate</span>
+                            <span className="text-muted-foreground">{t('students.attendanceRate')}</span>
                             <span className="font-semibold">{childRate}%</span>
                           </div>
                           <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -281,7 +290,7 @@ export default async function ParentDashboard() {
                         {lastRecord && (
                           <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50">
                             <span className="text-sm text-muted-foreground">
-                              {formatDate(lastRecord.date)}
+                              {formatDate(lastRecord.date, locale)}
                             </span>
                             <Badge
                               variant={
@@ -294,7 +303,7 @@ export default async function ParentDashboard() {
                                   : 'absent'
                               }
                             >
-                              {lastRecord.status.charAt(0).toUpperCase() + lastRecord.status.slice(1)}
+                              {t(`attendance.${lastRecord.status}`)}
                             </Badge>
                           </div>
                         )}
@@ -304,7 +313,7 @@ export default async function ParentDashboard() {
                           <div className="flex items-center gap-2 text-sm">
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
                             <span className="text-muted-foreground">
-                              {childEval.evaluation_type} evaluation: 
+                              {childEval.evaluation_type}: 
                             </span>
                             {childEval.grade && (
                               <Badge variant="outline">{childEval.grade}%</Badge>
@@ -316,7 +325,7 @@ export default async function ParentDashboard() {
                         <div className="flex gap-2 pt-2">
                           <Link href={`/parent/attendance?child=${child.id}`} className="flex-1">
                             <Button variant="outline" size="sm" className="w-full">
-                              Attendance
+                              {t('nav.attendance')}
                             </Button>
                           </Link>
                           <Link href={`/parent/requests/new?child=${child.id}`}>
@@ -334,9 +343,9 @@ export default async function ParentDashboard() {
           ) : (
             <Card className="p-12 text-center">
               <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Children Linked</h3>
+              <h3 className="text-lg font-semibold mb-2">{t('students.noChildrenLinked')}</h3>
               <p className="text-muted-foreground">
-                Please contact your school administrator to link your children to your account.
+                {t('students.contactSchoolToLink')}
               </p>
             </Card>
           )}
@@ -349,7 +358,7 @@ export default async function ParentDashboard() {
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Send className="h-4 w-4" />
-                Absence Requests
+                {t('requests.absenceRequests')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -364,7 +373,7 @@ export default async function ParentDashboard() {
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{request.student?.full_name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {formatDate(request.start_date)} - {formatDate(request.end_date)}
+                            {formatDate(request.start_date, locale)} - {formatDate(request.end_date, locale)}
                           </p>
                         </div>
                         <Badge
@@ -376,23 +385,23 @@ export default async function ParentDashboard() {
                               : 'late'
                           }
                         >
-                          {request.status === 'pending' && <Clock className="h-3 w-3 mr-1" />}
-                          {request.status === 'approved' && <CheckCircle className="h-3 w-3 mr-1" />}
-                          {request.status === 'rejected' && <XCircle className="h-3 w-3 mr-1" />}
-                          {request.status}
+                          {request.status === 'pending' && <Clock className="h-3 w-3 me-1" />}
+                          {request.status === 'approved' && <CheckCircle className="h-3 w-3 me-1" />}
+                          {request.status === 'rejected' && <XCircle className="h-3 w-3 me-1" />}
+                          {t(`common.${request.status}`)}
                         </Badge>
                       </div>
                     </div>
                   ))}
                   <Link href="/parent/requests">
                     <Button variant="outline" size="sm" className="w-full mt-2">
-                      View All Requests
+                      {t('requests.viewAllRequests')}
                     </Button>
                   </Link>
                 </div>
               ) : (
                 <div className="text-center py-4 text-muted-foreground text-sm">
-                  No absence requests yet
+                  {t('requests.noRequests')}
                 </div>
               )}
             </CardContent>
@@ -403,7 +412,7 @@ export default async function ParentDashboard() {
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                Recent Notes
+                {t('notes.recentNotes')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -423,7 +432,7 @@ export default async function ParentDashboard() {
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm">{note.title}</p>
                           <p className="text-xs text-muted-foreground truncate">
-                            {note.student?.full_name} • {formatDate(note.created_at)}
+                            {note.student?.full_name} • {formatDate(note.created_at, locale)}
                           </p>
                         </div>
                       </div>
@@ -432,7 +441,7 @@ export default async function ParentDashboard() {
                 </div>
               ) : (
                 <div className="text-center py-4 text-muted-foreground text-sm">
-                  No notes from teachers
+                  {t('notes.noNotesFromTeachers')}
                 </div>
               )}
             </CardContent>
@@ -448,8 +457,8 @@ export default async function ParentDashboard() {
               <Send className="h-5 w-5 text-violet-600" />
             </div>
             <div>
-              <h3 className="font-medium">Submit Absence</h3>
-              <p className="text-xs text-muted-foreground">Request student absence</p>
+              <h3 className="font-medium">{t('quickActions.submitAbsence')}</h3>
+              <p className="text-xs text-muted-foreground">{t('requests.requestStudentAbsence')}</p>
             </div>
           </Link>
         </Card>
@@ -460,8 +469,8 @@ export default async function ParentDashboard() {
               <Calendar className="h-5 w-5 text-emerald-600" />
             </div>
             <div>
-              <h3 className="font-medium">View Attendance</h3>
-              <p className="text-xs text-muted-foreground">Detailed records</p>
+              <h3 className="font-medium">{t('quickActions.viewAttendance')}</h3>
+              <p className="text-xs text-muted-foreground">{t('attendance.detailedRecords')}</p>
             </div>
           </Link>
         </Card>
@@ -472,8 +481,8 @@ export default async function ParentDashboard() {
               <TrendingUp className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <h3 className="font-medium">Evaluations</h3>
-              <p className="text-xs text-muted-foreground">Grades & progress</p>
+              <h3 className="font-medium">{t('quickActions.viewEvaluations')}</h3>
+              <p className="text-xs text-muted-foreground">{t('evaluations.gradesAndProgress')}</p>
             </div>
           </Link>
         </Card>
@@ -484,8 +493,8 @@ export default async function ParentDashboard() {
               <AlertCircle className="h-5 w-5 text-red-600" />
             </div>
             <div>
-              <h3 className="font-medium">Report Issue</h3>
-              <p className="text-xs text-muted-foreground">Contact school</p>
+              <h3 className="font-medium">{t('quickActions.reportIssue')}</h3>
+              <p className="text-xs text-muted-foreground">{t('issues.contactSchool')}</p>
             </div>
           </Link>
         </Card>

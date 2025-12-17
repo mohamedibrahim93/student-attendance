@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ interface AttendanceWithComment {
 export default function AttendancePage() {
   const searchParams = useSearchParams();
   const initialClassId = searchParams.get('class');
+  const t = useTranslations();
   
   const [classes, setClasses] = React.useState<Class[]>([]);
   const [students, setStudents] = React.useState<Student[]>([]);
@@ -34,6 +36,13 @@ export default function AttendancePage() {
   const [saving, setSaving] = React.useState(false);
   const [sessionCode, setSessionCode] = React.useState('');
   const [showAttendancePopup, setShowAttendancePopup] = React.useState(false);
+  const [locale, setLocale] = React.useState('ar');
+
+  React.useEffect(() => {
+    if (typeof document !== 'undefined') {
+      setLocale(document.documentElement.lang || 'ar');
+    }
+  }, []);
 
   // Fetch classes on mount
   React.useEffect(() => {
@@ -142,10 +151,10 @@ export default function AttendancePage() {
           .upsert(record, { onConflict: 'student_id,class_id,date' });
       }
 
-      alert('Attendance saved successfully!');
+      alert(t('common.success'));
     } catch (error) {
       console.error('Error saving attendance:', error);
-      alert('Error saving attendance. Please try again.');
+      alert(t('common.error'));
     } finally {
       setSaving(false);
     }
@@ -204,8 +213,8 @@ export default function AttendancePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Attendance</h1>
-          <p className="text-muted-foreground mt-1">{formatDate(new Date())}</p>
+          <h1 className="text-3xl font-bold">{t('nav.attendance')}</h1>
+          <p className="text-muted-foreground mt-1">{formatDate(new Date(), locale)}</p>
         </div>
         <div className="flex items-center gap-3">
           <Select
@@ -213,7 +222,7 @@ export default function AttendancePage() {
             onChange={(e) => setSelectedClass(e.target.value)}
             className="w-48"
           >
-            <option value="">Select Class</option>
+            <option value="">{t('teacherAttendance.selectClass')}</option>
             {classes.map((cls) => (
               <option key={cls.id} value={cls.id}>
                 {cls.name}
@@ -233,7 +242,7 @@ export default function AttendancePage() {
               className="gap-2"
             >
               <QrCode className="h-4 w-4" />
-              QR Code
+              {t('teacherAttendance.qrCode')}
             </Button>
             <Button
               variant={viewMode === 'manual' ? 'default' : 'outline'}
@@ -241,7 +250,7 @@ export default function AttendancePage() {
               className="gap-2"
             >
               <ClipboardList className="h-4 w-4" />
-              Manual Entry
+              {t('teacherAttendance.manualEntry')}
             </Button>
           </div>
 
@@ -251,7 +260,7 @@ export default function AttendancePage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>
-                    {viewMode === 'qr' ? 'QR Code Check-in' : 'Manual Attendance'}
+                    {viewMode === 'qr' ? t('teacherAttendance.qrCheckIn') : t('teacherAttendance.manualAttendance')}
                   </CardTitle>
                   {selectedClassName && (
                     <Badge variant="secondary">{selectedClassName}</Badge>
@@ -270,10 +279,10 @@ export default function AttendancePage() {
                     <div className="flex flex-col items-center justify-center py-8 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30 rounded-2xl border-2 border-dashed border-violet-200 dark:border-violet-800">
                       <UserCheck className="h-12 w-12 text-violet-500 mb-4" />
                       <h3 className="text-lg font-semibold text-foreground mb-2">
-                        Register Attendance
+                        {t('teacherAttendance.registerAttendance')}
                       </h3>
                       <p className="text-sm text-muted-foreground text-center mb-4 max-w-xs">
-                        Go through each student sequentially to mark their attendance status and add comments
+                        {t('teacherAttendance.registerDescription')}
                       </p>
                       <Button 
                         onClick={handleStartRegister}
@@ -282,7 +291,7 @@ export default function AttendancePage() {
                         size="lg"
                       >
                         <Play className="h-5 w-5" />
-                        Start Registration ({students.length} students)
+                        {t('teacherAttendance.startRegistration')} ({students.length} {t('nav.students')})
                       </Button>
                     </div>
 
@@ -291,19 +300,19 @@ export default function AttendancePage() {
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div className="text-center p-3 rounded-xl bg-emerald-100 dark:bg-emerald-900/20">
                           <p className="text-2xl font-bold text-emerald-600">{stats.present}</p>
-                          <p className="text-xs text-muted-foreground">Present</p>
+                          <p className="text-xs text-muted-foreground">{t('attendance.present')}</p>
                         </div>
                         <div className="text-center p-3 rounded-xl bg-red-100 dark:bg-red-900/20">
                           <p className="text-2xl font-bold text-red-600">{stats.absent}</p>
-                          <p className="text-xs text-muted-foreground">Absent</p>
+                          <p className="text-xs text-muted-foreground">{t('attendance.absent')}</p>
                         </div>
                         <div className="text-center p-3 rounded-xl bg-amber-100 dark:bg-amber-900/20">
                           <p className="text-2xl font-bold text-amber-600">{stats.late}</p>
-                          <p className="text-xs text-muted-foreground">Late</p>
+                          <p className="text-xs text-muted-foreground">{t('attendance.late')}</p>
                         </div>
                         <div className="text-center p-3 rounded-xl bg-blue-100 dark:bg-blue-900/20">
                           <p className="text-2xl font-bold text-blue-600">{stats.withComments}</p>
-                          <p className="text-xs text-muted-foreground">With Notes</p>
+                          <p className="text-xs text-muted-foreground">{t('teacherAttendance.withNotes')}</p>
                         </div>
                       </div>
                     )}
@@ -317,12 +326,12 @@ export default function AttendancePage() {
                       {saving ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          Saving...
+                          {t('teacherAttendance.saving')}
                         </>
                       ) : (
                         <>
                           <Save className="h-4 w-4" />
-                          Save Attendance
+                          {t('teacherAttendance.saveAttendance')}
                         </>
                       )}
                     </Button>
@@ -334,16 +343,16 @@ export default function AttendancePage() {
             {/* Live Attendance Status */}
             <Card>
               <CardHeader>
-                <CardTitle>Today&apos;s Attendance</CardTitle>
+                <CardTitle>{t('teacherAttendance.todaysAttendance')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {/* Summary Stats */}
                 <div className="grid grid-cols-4 gap-3 mb-6">
                   {[
-                    { label: 'Present', count: stats.present, color: 'emerald' },
-                    { label: 'Absent', count: stats.absent, color: 'red' },
-                    { label: 'Late', count: stats.late, color: 'amber' },
-                    { label: 'Excused', count: stats.excused, color: 'blue' },
+                    { label: t('attendance.present'), count: stats.present, color: 'emerald' },
+                    { label: t('attendance.absent'), count: stats.absent, color: 'red' },
+                    { label: t('attendance.late'), count: stats.late, color: 'amber' },
+                    { label: t('attendance.excused'), count: stats.excused, color: 'blue' },
                   ].map((stat) => (
                     <div
                       key={stat.label}
@@ -385,7 +394,7 @@ export default function AttendancePage() {
                         <Badge
                           variant={data?.status === 'present' ? 'present' : data?.status === 'late' ? 'late' : data?.status === 'excused' ? 'excused' : 'absent'}
                         >
-                          {data?.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1) : 'Not Marked'}
+                          {data?.status ? t(`attendance.${data.status}`) : t('teacherAttendance.notMarked')}
                         </Badge>
                       </div>
                     );
@@ -398,9 +407,9 @@ export default function AttendancePage() {
       ) : (
         <Card className="p-12 text-center">
           <QrCode className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Select a Class</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('teacherAttendance.selectClassTitle')}</h3>
           <p className="text-muted-foreground">
-            Choose a class from the dropdown to start taking attendance.
+            {t('teacherAttendance.selectClassDescription')}
           </p>
         </Card>
       )}

@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { getLocale } from 'next-intl/server';
 import { NavBar } from '@/components/nav-bar';
 
 export default async function MoELayout({
@@ -9,6 +10,7 @@ export default async function MoELayout({
 }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const locale = await getLocale();
 
   if (!user) {
     redirect('/login');
@@ -35,11 +37,10 @@ export default async function MoELayout({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-      <NavBar user={profile} navItems={navItems} />
+      <NavBar user={profile} navItems={navItems} locale={locale} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
     </div>
   );
 }
-

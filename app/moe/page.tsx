@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { StatsCard } from '@/components/ui/stats-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,12 +11,17 @@ import {
   GraduationCap,
   TrendingUp,
   ArrowRight,
+  ArrowLeft,
   AlertCircle,
 } from 'lucide-react';
 import { formatDate, calculateAttendancePercentage } from '@/lib/utils';
 
 export default async function MoEDashboard() {
   const supabase = createClient();
+  const t = await getTranslations();
+  const locale = await getLocale();
+  const isRTL = locale === 'ar';
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   // Fetch all schools
   const { data: schools } = await supabase
@@ -77,15 +83,15 @@ export default async function MoEDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">MoE Dashboard</h1>
+          <h1 className="text-3xl font-bold">{t('moe.dashboard')}</h1>
           <p className="text-muted-foreground mt-1">
-            Ministry of Education Overview • {formatDate(new Date())}
+            {t('moe.title')} • {formatDate(new Date(), locale)}
           </p>
         </div>
         <Link href="/moe/schools">
           <Button className="gap-2">
             <Building2 className="h-4 w-4" />
-            Manage Schools
+            {t('nav.schools')}
           </Button>
         </Link>
       </div>
@@ -93,29 +99,28 @@ export default async function MoEDashboard() {
       {/* Stats Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Total Schools"
+          title={t('stats.totalSchools')}
           value={schools?.length || 0}
           icon="building-2"
           iconColor="text-blue-600"
         />
         <StatsCard
-          title="Total Students"
+          title={t('stats.totalStudents')}
           value={totalStudents || 0}
           icon="graduation-cap"
           iconColor="text-violet-600"
         />
         <StatsCard
-          title="Total Teachers"
+          title={t('stats.totalTeachers')}
           value={totalTeachers || 0}
           icon="users"
           iconColor="text-emerald-600"
         />
         <StatsCard
-          title="Today's Attendance"
+          title={t('stats.todaysAttendance')}
           value={`${overallAttendanceRate}%`}
           icon="trending-up"
           iconColor="text-amber-600"
-          description="Across all schools"
         />
       </div>
 
@@ -124,10 +129,10 @@ export default async function MoEDashboard() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            Schools Overview
+            {t('nav.schools')}
           </h2>
           <Link href="/moe/schools" className="text-sm text-primary hover:underline flex items-center gap-1">
-            View All <ArrowRight className="h-4 w-4" />
+            {t('common.viewAll')} <ArrowIcon className="h-4 w-4" />
           </Link>
         </div>
 
@@ -145,7 +150,7 @@ export default async function MoEDashboard() {
                       <Building2 className="h-5 w-5 text-blue-600" />
                     </div>
                     <Badge variant={school.is_active ? 'present' : 'absent'}>
-                      {school.is_active ? 'Active' : 'Inactive'}
+                      {school.is_active ? t('common.active') : t('common.inactive')}
                     </Badge>
                   </div>
                   <CardTitle className="mt-3">{school.name}</CardTitle>
@@ -155,22 +160,22 @@ export default async function MoEDashboard() {
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
                       <p className="text-2xl font-bold text-violet-600">{school.student_count}</p>
-                      <p className="text-xs text-muted-foreground">Students</p>
+                      <p className="text-xs text-muted-foreground">{t('nav.students')}</p>
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-emerald-600">{school.teacher_count}</p>
-                      <p className="text-xs text-muted-foreground">Teachers</p>
+                      <p className="text-xs text-muted-foreground">{t('nav.teachers')}</p>
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-amber-600">{school.class_count}</p>
-                      <p className="text-xs text-muted-foreground">Classes</p>
+                      <p className="text-xs text-muted-foreground">{t('nav.classes')}</p>
                     </div>
                   </div>
                   <div className="mt-4 pt-4 border-t">
                     <Link href={`/moe/schools/${school.id}`}>
                       <Button variant="outline" size="sm" className="w-full gap-1 group-hover:text-primary">
-                        View Details
-                        <ArrowRight className="h-3 w-3" />
+                        {t('common.details')}
+                        <ArrowIcon className="h-3 w-3" />
                       </Button>
                     </Link>
                   </div>
@@ -181,12 +186,12 @@ export default async function MoEDashboard() {
         ) : (
           <Card className="p-12 text-center">
             <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No Schools Registered</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('common.noData')}</h3>
             <p className="text-muted-foreground mb-4">
-              Add schools to start managing the education system.
+              {t('common.noData')}
             </p>
             <Link href="/moe/schools/new">
-              <Button>Add School</Button>
+              <Button>{t('common.add')}</Button>
             </Link>
           </Card>
         )}
@@ -200,14 +205,14 @@ export default async function MoEDashboard() {
               <Building2 className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold">Add New School</h3>
+              <h3 className="font-semibold">{t('common.add')} {t('nav.schools')}</h3>
               <p className="text-sm text-muted-foreground">
-                Register a new school
+                {t('common.create')}
               </p>
             </div>
             <Link href="/moe/schools/new">
               <Button variant="outline" size="sm">
-                Add
+                {t('common.add')}
               </Button>
             </Link>
           </div>
@@ -219,14 +224,14 @@ export default async function MoEDashboard() {
               <TrendingUp className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold">View Reports</h3>
+              <h3 className="font-semibold">{t('quickActions.viewReports')}</h3>
               <p className="text-sm text-muted-foreground">
-                Attendance & evaluations
+                {t('reports.attendanceAndGrades')}
               </p>
             </div>
             <Link href="/moe/reports">
               <Button variant="outline" size="sm">
-                View
+                {t('common.view')}
               </Button>
             </Link>
           </div>
@@ -238,14 +243,14 @@ export default async function MoEDashboard() {
               <AlertCircle className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold">Send Announcement</h3>
+              <h3 className="font-semibold">{t('announcements.announce')}</h3>
               <p className="text-sm text-muted-foreground">
-                Broadcast to all schools
+                {t('nav.announcements')}
               </p>
             </div>
             <Link href="/moe/announcements/new">
               <Button variant="outline" size="sm">
-                Send
+                {t('common.submit')}
               </Button>
             </Link>
           </div>
@@ -254,4 +259,3 @@ export default async function MoEDashboard() {
     </div>
   );
 }
-

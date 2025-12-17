@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -75,6 +75,15 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: 'IBM Plex Sans Arabic', 'Space Grotesk', system-ui, sans-serif;
+  }
+
+  /* RTL support */
+  [dir="rtl"] body {
+    font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  }
+
+  [dir="ltr"] body {
     font-family: 'Space Grotesk', system-ui, sans-serif;
   }
 
@@ -92,8 +101,17 @@
     @apply bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent;
   }
 
+  /* RTL gradient direction */
+  [dir="rtl"] .gradient-text {
+    @apply bg-gradient-to-l;
+  }
+
   .gradient-bg {
     @apply bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600;
+  }
+
+  [dir="rtl"] .gradient-bg {
+    @apply bg-gradient-to-bl;
   }
 
   .pattern-dots {
@@ -125,6 +143,21 @@
   .animate-stagger-5 {
     animation-delay: 500ms;
   }
+
+  /* RTL utilities */
+  [dir="rtl"] .rtl\:space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+  }
+
+  [dir="rtl"] .rtl\:flex-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  /* Fix icon positioning in RTL */
+  [dir="rtl"] .gap-2 > svg:first-child,
+  [dir="rtl"] .gap-3 > svg:first-child {
+    order: 1;
+  }
 }
 
 /* Custom scrollbar */
@@ -146,3 +179,15 @@
   @apply bg-primary/20 text-foreground;
 }
 
+/* RTL specific adjustments */
+[dir="rtl"] {
+  /* Flip translate animations */
+  .group-hover\:translate-x-1 {
+    --tw-translate-x: -0.25rem;
+  }
+}
+
+/* Fix flex gap for RTL */
+[dir="rtl"] .flex {
+  gap: inherit;
+}

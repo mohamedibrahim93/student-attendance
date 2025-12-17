@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import QRCode from 'qrcode';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Copy, Check } from 'lucide-react';
 import { generateSessionCode } from '@/lib/utils';
@@ -13,6 +14,7 @@ interface QRGeneratorProps {
 }
 
 export function QRGenerator({ classId, className, onSessionCreated }: QRGeneratorProps) {
+  const t = useTranslations();
   const [qrDataUrl, setQrDataUrl] = React.useState<string>('');
   const [sessionCode, setSessionCode] = React.useState<string>('');
   const [expiresAt, setExpiresAt] = React.useState<Date | null>(null);
@@ -90,7 +92,7 @@ export function QRGenerator({ classId, className, onSessionCreated }: QRGenerato
             {qrDataUrl ? (
               <img
                 src={qrDataUrl}
-                alt="Attendance QR Code"
+                alt={t('qrGenerator.qrCodeAlt')}
                 className="w-64 h-64 rounded-xl"
               />
             ) : (
@@ -103,7 +105,7 @@ export function QRGenerator({ classId, className, onSessionCreated }: QRGenerato
 
         {/* Session Code */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-muted-foreground mb-2">Session Code</p>
+          <p className="text-sm text-muted-foreground mb-2">{t('qrGenerator.sessionCode')}</p>
           <div className="flex items-center gap-2">
             <span className="text-3xl font-mono font-bold tracking-widest text-primary">
               {sessionCode}
@@ -126,7 +128,7 @@ export function QRGenerator({ classId, className, onSessionCreated }: QRGenerato
         {/* Timer */}
         <div className="mt-4 flex items-center gap-4">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">Expires in</p>
+            <p className="text-sm text-muted-foreground">{t('qrGenerator.expiresIn')}</p>
             <p className={`text-2xl font-mono font-bold ${timeLeft < 60 ? 'text-red-500' : 'text-foreground'}`}>
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </p>
@@ -139,19 +141,17 @@ export function QRGenerator({ classId, className, onSessionCreated }: QRGenerato
             className="gap-2"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Regenerate
+            {t('qrGenerator.regenerate')}
           </Button>
         </div>
 
         {/* Instructions */}
         <div className="mt-6 p-4 bg-muted/50 rounded-xl max-w-sm">
           <p className="text-sm text-center text-muted-foreground">
-            Students can scan this QR code or enter the session code to mark their attendance.
-            The code will automatically refresh every 5 minutes.
+            {t('qrGenerator.instructions')}
           </p>
         </div>
       </div>
     </div>
   );
 }
-

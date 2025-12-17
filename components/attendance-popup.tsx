@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -13,11 +14,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Check, 
-  X, 
+import {
+  Check,
+  X,
   Clock,
-  ChevronLeft, 
+  ChevronLeft,
   ChevronRight,
   MessageSquare,
   User,
@@ -47,6 +48,7 @@ export function AttendancePopup({
   onComplete,
   existingAttendance = {},
 }: AttendancePopupProps) {
+  const t = useTranslations();
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [records, setRecords] = React.useState<Record<string, AttendanceRecord>>({});
   const [comment, setComment] = React.useState('');
@@ -73,7 +75,7 @@ export function AttendancePopup({
       });
       setRecords(initialRecords);
       setCurrentIndex(0);
-      
+
       // Set initial state for first student
       const firstStudent = students[0];
       const firstExisting = existingAttendance[firstStudent?.id];
@@ -170,9 +172,9 @@ export function AttendancePopup({
   if (!currentStudent) return null;
 
   const statusButtons = [
-    { status: 'present' as AttendanceStatus, icon: Check, label: 'Present', color: 'emerald', bgClass: 'bg-emerald-500 hover:bg-emerald-600', ringClass: 'ring-emerald-500' },
-    { status: 'absent' as AttendanceStatus, icon: X, label: 'Absent', color: 'red', bgClass: 'bg-red-500 hover:bg-red-600', ringClass: 'ring-red-500' },
-    { status: 'late' as AttendanceStatus, icon: Clock, label: 'Late', color: 'amber', bgClass: 'bg-amber-500 hover:bg-amber-600', ringClass: 'ring-amber-500' },
+    { status: 'present' as AttendanceStatus, icon: Check, label: t('attendance.present'), color: 'emerald', bgClass: 'bg-emerald-500 hover:bg-emerald-600', ringClass: 'ring-emerald-500' },
+    { status: 'absent' as AttendanceStatus, icon: X, label: t('attendance.absent'), color: 'red', bgClass: 'bg-red-500 hover:bg-red-600', ringClass: 'ring-red-500' },
+    { status: 'late' as AttendanceStatus, icon: Clock, label: t('attendance.late'), color: 'amber', bgClass: 'bg-amber-500 hover:bg-amber-600', ringClass: 'ring-amber-500' },
   ];
 
   const isLastStudent = currentIndex === totalStudents - 1;
@@ -180,10 +182,10 @@ export function AttendancePopup({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg" onClose={() => onOpenChange(false)}>
+      <DialogContent className="w-[30vw] max-w-none" onClose={() => onOpenChange(false)}>
         {/* Progress Bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-muted rounded-t-2xl overflow-hidden">
-          <div 
+          <div
             className="h-full bg-gradient-to-r from-violet-500 to-purple-600 transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
@@ -192,21 +194,21 @@ export function AttendancePopup({
         <DialogHeader className="pt-6">
           <div className="flex items-center justify-between">
             <Badge variant="secondary" className="text-xs">
-              Student {currentIndex + 1} of {totalStudents}
+              {t('attendancePopup.studentOf', { current: currentIndex + 1, total: totalStudents })}
             </Badge>
-            <Badge 
-              variant="secondary" 
+            <Badge
+              variant="secondary"
               className={cn(
                 'text-xs',
                 hasRecord && 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
               )}
             >
-              {Object.keys(records).length} Marked
+              {Object.keys(records).length} {t('attendancePopup.marked')}
             </Badge>
           </div>
-          <DialogTitle className="text-center mt-4">Register Attendance</DialogTitle>
+          <DialogTitle className="text-center mt-4">{t('teacherAttendance.registerAttendance')}</DialogTitle>
           <DialogDescription className="text-center">
-            Mark attendance status for each student
+            {t('attendancePopup.markStatus')}
           </DialogDescription>
         </DialogHeader>
 
@@ -232,7 +234,7 @@ export function AttendancePopup({
           {/* Status Buttons */}
           <div className="mt-6">
             <p className="text-sm font-medium text-muted-foreground mb-3 text-center">
-              Select Attendance Status
+              {t('attendancePopup.selectStatus')}
             </p>
             <div className="grid grid-cols-3 gap-3">
               {statusButtons.map(({ status, icon: Icon, label, bgClass, ringClass }) => (
@@ -262,12 +264,12 @@ export function AttendancePopup({
                 className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 text-muted-foreground hover:text-foreground hover:border-violet-400 dark:hover:border-violet-600 transition-colors"
               >
                 <MessageSquare className="h-4 w-4" />
-                <span className="text-sm">Add Comment (Optional)</span>
+                <span className="text-sm">{t('attendancePopup.addComment')}</span>
               </button>
             ) : (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-foreground">Comment</label>
+                  <label className="text-sm font-medium text-foreground">{t('attendancePopup.comment')}</label>
                   <button
                     onClick={() => {
                       setShowCommentField(false);
@@ -275,11 +277,11 @@ export function AttendancePopup({
                     }}
                     className="text-xs text-muted-foreground hover:text-foreground"
                   >
-                    Remove
+                    {t('attendancePopup.remove')}
                   </button>
                 </div>
                 <Textarea
-                  placeholder="Add notes about this student's attendance..."
+                  placeholder={t('attendancePopup.commentPlaceholder')}
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   rows={3}
@@ -297,15 +299,15 @@ export function AttendancePopup({
               disabled={currentIndex === 0}
               className="flex-1 sm:flex-initial gap-1"
             >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
+              <ChevronRight className="h-4 w-4" />
+              {t('common.previous')}
             </Button>
             <Button
               variant="ghost"
               onClick={handleSkip}
               className="flex-1 sm:flex-initial text-muted-foreground"
             >
-              Skip
+              {t('attendancePopup.skip')}
             </Button>
           </div>
           <Button
@@ -319,12 +321,12 @@ export function AttendancePopup({
             {isLastStudent ? (
               <>
                 <Check className="h-4 w-4" />
-                Complete
+                {t('attendancePopup.complete')}
               </>
             ) : (
               <>
-                Next
-                <ChevronRight className="h-4 w-4" />
+                {t('common.next')}
+                <ChevronLeft className="h-4 w-4" />
               </>
             )}
           </Button>
@@ -333,4 +335,3 @@ export function AttendancePopup({
     </Dialog>
   );
 }
-

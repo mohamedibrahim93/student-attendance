@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { QRScanner } from '@/components/qr-scanner';
@@ -11,8 +12,10 @@ import { formatDate, calculateAttendancePercentage } from '@/lib/utils';
 import type { Attendance, Student } from '@/lib/types';
 
 export default function StudentDashboard() {
+  const t = useTranslations();
   const [student, setStudent] = React.useState<Student | null>(null);
   const [recentAttendance, setRecentAttendance] = React.useState<Attendance[]>([]);
+  const [locale, setLocale] = React.useState('ar');
   const [stats, setStats] = React.useState({
     total: 0,
     present: 0,
@@ -20,6 +23,13 @@ export default function StudentDashboard() {
     late: 0,
   });
   const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    // Get locale from document
+    if (typeof document !== 'undefined') {
+      setLocale(document.documentElement.lang || 'ar');
+    }
+  }, []);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -71,7 +81,7 @@ export default function StudentDashboard() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user || !student) {
-      return { success: false, message: 'Please log in to check in.' };
+      return { success: false, message: t('common.error') };
     }
 
     // Find active session with this code
@@ -84,12 +94,12 @@ export default function StudentDashboard() {
       .single();
 
     if (!session) {
-      return { success: false, message: 'Invalid or expired code. Please try again.' };
+      return { success: false, message: t('common.error') };
     }
 
     // Check if student belongs to this class
     if (student.class_id !== session.class_id) {
-      return { success: false, message: 'This code is for a different class.' };
+      return { success: false, message: t('common.error') };
     }
 
     // Check if already marked today
@@ -103,7 +113,7 @@ export default function StudentDashboard() {
       .single();
 
     if (existing) {
-      return { success: false, message: 'You have already checked in today!' };
+      return { success: false, message: t('common.error') };
     }
 
     // Mark attendance
@@ -118,7 +128,7 @@ export default function StudentDashboard() {
     });
 
     if (error) {
-      return { success: false, message: 'Error checking in. Please try again.' };
+      return { success: false, message: t('common.error') };
     }
 
     // Refresh data
@@ -131,7 +141,7 @@ export default function StudentDashboard() {
 
     setRecentAttendance(updatedAttendance || []);
 
-    return { success: true, message: 'Successfully checked in! Have a great class.' };
+    return { success: true, message: t('common.success') };
   };
 
   const attendanceRate = calculateAttendancePercentage(stats.present + stats.late, stats.total);
@@ -140,18 +150,18 @@ export default function StudentDashboard() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Welcome back!</h1>
+        <h1 className="text-3xl font-bold">{t('auth.welcomeBack')}</h1>
         <p className="text-muted-foreground mt-1">
-          {formatDate(new Date())} • {student?.class?.name || 'Loading...'}
+          {formatDate(new Date(), locale)} • {student?.class?.name || t('common.loading')}
         </p>
       </div>
 
       {/* Check-in Section */}
       <Card className="border-primary/20 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/20">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Check In</CardTitle>
+          <CardTitle className="text-2xl">{t('attendance.checkIn')}</CardTitle>
           <CardDescription>
-            Scan the QR code or enter the session code to mark your attendance
+            {t('attendance.forStudentCheckIn')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -162,26 +172,25 @@ export default function StudentDashboard() {
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Attendance Rate"
+          title={t('stats.overallAttendance')}
           value={`${attendanceRate}%`}
           icon="trending-up"
           iconColor="text-violet-600"
-          description="Last 30 days"
         />
         <StatsCard
-          title="Days Present"
+          title={t('stats.daysPresent')}
           value={stats.present}
           icon="check-circle"
           iconColor="text-emerald-600"
         />
         <StatsCard
-          title="Days Absent"
+          title={t('stats.daysAbsent')}
           value={stats.absent}
           icon="x-circle"
           iconColor="text-red-600"
         />
         <StatsCard
-          title="Days Late"
+          title={t('attendance.late')}
           value={stats.late}
           icon="clock"
           iconColor="text-amber-600"
@@ -193,7 +202,7 @@ export default function StudentDashboard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Recent Attendance
+            {t('nav.myAttendance')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -205,7 +214,7 @@ export default function StudentDashboard() {
                   className="flex items-center justify-between py-3 px-4 rounded-lg bg-muted/30 animate-fade-in"
                   style={{ animationDelay: `${i * 50}ms` }}
                 >
-                  <span className="font-medium">{formatDate(record.date)}</span>
+                  <span className="font-medium">{formatDate(record.date, locale)}</span>
                   <Badge
                     variant={
                       record.status === 'present'
@@ -217,14 +226,14 @@ export default function StudentDashboard() {
                         : 'absent'
                     }
                   >
-                    {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                    {t(`attendance.${record.status}`)}
                   </Badge>
                 </div>
               ))}
             </div>
           ) : (
             <div className="text-center py-8 text-muted-foreground">
-              No attendance records yet.
+              {t('attendance.noAttendanceRecords')}
             </div>
           )}
         </CardContent>

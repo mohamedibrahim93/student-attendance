@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { NavBar } from '@/components/nav-bar';
 
 export default async function SchoolLayout({
@@ -9,6 +10,8 @@ export default async function SchoolLayout({
 }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const locale = await getLocale();
+  const t = await getTranslations();
 
   if (!user) {
     redirect('/login');
@@ -39,11 +42,10 @@ export default async function SchoolLayout({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-      <NavBar user={profile} navItems={navItems} schoolName={profile.school?.name} />
+      <NavBar user={profile} navItems={navItems} schoolName={profile.school?.name} locale={locale} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
     </div>
   );
 }
-

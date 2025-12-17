@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { StatsCard } from '@/components/ui/stats-card';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import {
   BookOpen,
   QrCode,
   ArrowRight,
+  ArrowLeft,
   Clock,
   FileText,
   Calendar,
@@ -21,6 +23,10 @@ import { formatDate, calculateAttendancePercentage } from '@/lib/utils';
 export default async function TeacherDashboard() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const t = await getTranslations();
+  const locale = await getLocale();
+  const isRTL = locale === 'ar';
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   // Get teacher profile and school
   const { data: profile } = await supabase
@@ -94,29 +100,29 @@ export default async function TeacherDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Welcome, {profile?.full_name?.split(' ')[0]}!</h1>
+          <h1 className="text-3xl font-bold">{t('dashboard.welcome', { name: profile?.full_name?.split(' ')[0] || '' })}</h1>
           <p className="text-muted-foreground mt-1">
-            {formatDate(new Date())} • {profile?.school?.name}
+            {formatDate(new Date(), locale)} • {profile?.school?.name}
           </p>
         </div>
         <div className="flex gap-2">
           {activeCheckIn ? (
             <Button variant="outline" className="gap-2 border-green-500 text-green-600">
               <CheckCircle className="h-4 w-4" />
-              Checked In: {activeCheckIn.class?.name}
+              {t('attendance.checkedIn', { class: activeCheckIn.class?.name })}
             </Button>
           ) : (
             <Link href="/teacher/attendance">
               <Button variant="outline" className="gap-2">
                 <PlayCircle className="h-4 w-4" />
-                Check In to Class
+                {t('attendance.checkInToClass')}
               </Button>
             </Link>
           )}
           <Link href="/teacher/attendance">
             <Button className="gap-2">
               <QrCode className="h-4 w-4" />
-              Take Attendance
+              {t('attendance.takeAttendance')}
             </Button>
           </Link>
         </div>
@@ -129,11 +135,13 @@ export default async function TeacherDashboard() {
             <Clock className="h-5 w-5 text-amber-600" />
             <div className="flex-1">
               <p className="font-medium text-amber-800 dark:text-amber-200">
-                You have {leaveRequests.length} pending leave request{leaveRequests.length !== 1 ? 's' : ''}
+                {leaveRequests.length === 1
+                  ? t('alerts.pendingLeaveRequest')
+                  : t('alerts.pendingLeaveRequests', { count: leaveRequests.length || 0 })}
               </p>
             </div>
             <Link href="/teacher/leave">
-              <Button size="sm" variant="outline">View</Button>
+              <Button size="sm" variant="outline">{t('common.view')}</Button>
             </Link>
           </CardContent>
         </Card>
@@ -142,25 +150,25 @@ export default async function TeacherDashboard() {
       {/* Stats Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Total Students"
+          title={t('stats.totalStudents')}
           value={stats.totalStudents}
           icon="users"
           iconColor="text-violet-600"
         />
         <StatsCard
-          title="Present Today"
+          title={t('stats.presentToday')}
           value={stats.present}
           icon="user-check"
           iconColor="text-emerald-600"
         />
         <StatsCard
-          title="Absent Today"
+          title={t('stats.absentToday')}
           value={stats.absent}
           icon="user-x"
           iconColor="text-red-600"
         />
         <StatsCard
-          title="Today's Rate"
+          title={t('stats.todaysRate')}
           value={`${attendanceRate}%`}
           icon="trending-up"
           iconColor="text-amber-600"
@@ -174,7 +182,7 @@ export default async function TeacherDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Today's Schedule
+              {t('schedule.todaysSchedule')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -203,17 +211,17 @@ export default async function TeacherDashboard() {
                           <p className="font-medium">{slot.subject?.name}</p>
                           <p className="text-sm text-muted-foreground">{slot.class?.name}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-end">
                           <p className="text-sm font-medium">
                             {slot.start_time?.slice(0, 5)} - {slot.end_time?.slice(0, 5)}
                           </p>
                           {slot.room && (
-                            <p className="text-xs text-muted-foreground">Room {slot.room}</p>
+                            <p className="text-xs text-muted-foreground">{t('schedule.room')} {slot.room}</p>
                           )}
                         </div>
                       </div>
                       {isNow && (
-                        <Badge className="mt-2" variant="present">In Progress</Badge>
+                        <Badge className="mt-2" variant="present">{t('schedule.inProgress')}</Badge>
                       )}
                     </div>
                   );
@@ -222,12 +230,12 @@ export default async function TeacherDashboard() {
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>No classes scheduled for today</p>
+                <p>{t('schedule.noClassesToday')}</p>
               </div>
             )}
             <Link href="/teacher/schedule" className="block mt-4">
               <Button variant="outline" size="sm" className="w-full">
-                View Full Schedule
+                {t('schedule.viewFullSchedule')}
               </Button>
             </Link>
           </CardContent>
@@ -236,9 +244,9 @@ export default async function TeacherDashboard() {
         {/* Classes Section */}
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Your Classes</h2>
-            <Link href="/teacher/students" className="text-sm text-primary hover:underline">
-              Manage Students →
+            <h2 className="text-xl font-semibold">{t('classes.yourClasses')}</h2>
+            <Link href="/teacher/students" className="text-sm text-primary hover:underline flex items-center gap-1">
+              {t('classes.manageStudents')} <ArrowIcon className="h-3 w-3" />
             </Link>
           </div>
 
@@ -273,11 +281,11 @@ export default async function TeacherDashboard() {
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Users className="h-4 w-4" />
-                          <span>{cls.students?.[0]?.count || 0} students</span>
+                          <span>{t('classes.studentsCount', { count: cls.students?.[0]?.count || 0 })}</span>
                         </div>
                         {classAttendance.length > 0 && (
                           <Badge variant={rate >= 80 ? 'present' : rate >= 60 ? 'late' : 'absent'}>
-                            {rate}% today
+                            {rate}% {t('common.today')}
                           </Badge>
                         )}
                       </div>
@@ -285,7 +293,7 @@ export default async function TeacherDashboard() {
                         <Link href={`/teacher/attendance?class=${cls.id}`} className="flex-1">
                           <Button variant="outline" size="sm" className="w-full gap-1">
                             <QrCode className="h-3 w-3" />
-                            Attendance
+                            {t('nav.attendance')}
                           </Button>
                         </Link>
                         <Link href={`/teacher/notes?class=${cls.id}`}>
@@ -302,9 +310,9 @@ export default async function TeacherDashboard() {
           ) : (
             <Card className="p-12 text-center">
               <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Classes Assigned</h3>
+              <h3 className="text-lg font-semibold mb-2">{t('classes.noClassesAssigned')}</h3>
               <p className="text-muted-foreground mb-4">
-                Contact your school admin to be assigned to classes.
+                {t('classes.contactSchoolAdmin')}
               </p>
             </Card>
           )}
@@ -319,8 +327,8 @@ export default async function TeacherDashboard() {
               <QrCode className="h-5 w-5 text-violet-600" />
             </div>
             <div>
-              <h3 className="font-medium">Generate QR Code</h3>
-              <p className="text-xs text-muted-foreground">For student check-in</p>
+              <h3 className="font-medium">{t('quickActions.generateQRCode')}</h3>
+              <p className="text-xs text-muted-foreground">{t('attendance.forStudentCheckIn')}</p>
             </div>
           </Link>
         </Card>
@@ -331,8 +339,8 @@ export default async function TeacherDashboard() {
               <FileText className="h-5 w-5 text-emerald-600" />
             </div>
             <div>
-              <h3 className="font-medium">Add Student Note</h3>
-              <p className="text-xs text-muted-foreground">For school or parent</p>
+              <h3 className="font-medium">{t('quickActions.addStudentNote')}</h3>
+              <p className="text-xs text-muted-foreground">{t('notes.forSchoolOrParent')}</p>
             </div>
           </Link>
         </Card>
@@ -343,8 +351,8 @@ export default async function TeacherDashboard() {
               <Clock className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <h3 className="font-medium">Request Leave</h3>
-              <p className="text-xs text-muted-foreground">Submit absence request</p>
+              <h3 className="font-medium">{t('quickActions.requestLeave')}</h3>
+              <p className="text-xs text-muted-foreground">{t('leave.submitAbsenceRequest')}</p>
             </div>
           </Link>
         </Card>
@@ -355,8 +363,8 @@ export default async function TeacherDashboard() {
               <AlertCircle className="h-5 w-5 text-red-600" />
             </div>
             <div>
-              <h3 className="font-medium">Report Issue</h3>
-              <p className="text-xs text-muted-foreground">To supervisor/admin</p>
+              <h3 className="font-medium">{t('quickActions.reportIssue')}</h3>
+              <p className="text-xs text-muted-foreground">{t('issues.toSupervisorAdmin')}</p>
             </div>
           </Link>
         </Card>

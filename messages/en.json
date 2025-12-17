@@ -1,0 +1,413 @@
+{
+  "common": {
+    "appName": "EduTech",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "create": "Create",
+    "update": "Update",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "view": "View",
+    "viewAll": "View All",
+    "back": "Back",
+    "backToHome": "Back to home",
+    "next": "Next",
+    "previous": "Previous",
+    "yes": "Yes",
+    "no": "No",
+    "approve": "Approve",
+    "reject": "Reject",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "active": "Active",
+    "inactive": "Inactive",
+    "all": "All",
+    "none": "None",
+    "actions": "Actions",
+    "status": "Status",
+    "date": "Date",
+    "time": "Time",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "noData": "No data available",
+    "error": "Error",
+    "success": "Success",
+    "unexpectedError": "An unexpected error occurred",
+    "required": "Required",
+    "optional": "Optional",
+    "manage": "Manage",
+    "details": "Details",
+    "description": "Description",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "fullName": "Full Name",
+    "note": "Note",
+    "notes": "Notes",
+    "reason": "Reason",
+    "review": "Review",
+    "read": "Read",
+    "language": "Language",
+    "arabic": "العربية",
+    "english": "English"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "logout": "Logout",
+    "welcomeBack": "Welcome back",
+    "signInToApp": "Sign in to EduTech",
+    "createAccount": "Create an account",
+    "getStartedWith": "Get started with EduTech",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "emailPlaceholder": "you@school.edu",
+    "passwordPlaceholder": "••••••••",
+    "namePlaceholder": "John Doe",
+    "phonePlaceholder": "+1 234 567 8900",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "demoAccounts": "Demo Accounts",
+    "schoolAdmin": "School Admin",
+    "teacher": "Teacher",
+    "parent": "Parent",
+    "student": "Student"
+  },
+  "roles": {
+    "moe_admin": "MoE Admin",
+    "school_admin": "School Admin",
+    "supervisor": "Supervisor",
+    "teacher": "Teacher",
+    "parent": "Parent",
+    "student": "Student"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "schools": "Schools",
+    "classes": "Classes",
+    "students": "Students",
+    "teachers": "Teachers",
+    "parents": "Parents",
+    "subjects": "Subjects",
+    "attendance": "Attendance",
+    "requests": "Requests",
+    "reports": "Reports",
+    "announcements": "Announcements",
+    "notifications": "Notifications",
+    "schedule": "Schedule",
+    "notes": "Notes",
+    "leave": "Leave",
+    "leaveRequests": "Leave Requests",
+    "absenceRequests": "Absence Requests",
+    "evaluations": "Evaluations",
+    "issues": "Issues",
+    "checkIn": "Check In",
+    "myAttendance": "My Attendance"
+  },
+  "home": {
+    "heroTagline": "Comprehensive School Management System",
+    "heroTitle": "Smart Education Management Platform",
+    "heroSubtitle": "From Ministry of Education to classrooms. Manage schools, track attendance, communicate with parents, and streamline educational administration.",
+    "startFreeTrial": "Start Free Trial",
+    "getStartedFree": "Get Started Free",
+    "features": {
+      "title": "Complete Education Management Solution",
+      "subtitle": "A unified platform for MoE, schools, teachers, parents, and students.",
+      "qrAttendance": {
+        "title": "QR Code Attendance",
+        "description": "Teachers generate time-limited QR codes. Students scan to check in instantly."
+      },
+      "multiLevel": {
+        "title": "Multi-Level Hierarchy",
+        "description": "MoE → Schools → Classes. Proper role-based access for everyone."
+      },
+      "absenceWorkflow": {
+        "title": "Absence Request Workflow",
+        "description": "Parents submit requests, schools approve or reject with notifications."
+      },
+      "notifications": {
+        "title": "Instant Notifications",
+        "description": "Alerts for absences, announcements, evaluations, and request updates."
+      },
+      "schedules": {
+        "title": "Subject Schedules",
+        "description": "Track attendance per subject with teacher assignments and time slots."
+      },
+      "reports": {
+        "title": "Comprehensive Reports",
+        "description": "Attendance rates, evaluations, and performance analytics at all levels."
+      }
+    },
+    "cards": {
+      "moe": {
+        "title": "Ministry of Education",
+        "description": "Oversee all schools, view reports, track performance, and send announcements.",
+        "tag1": "Multi-School Management",
+        "tag2": "Analytics"
+      },
+      "school": {
+        "title": "School Administration",
+        "description": "Manage classes, teachers, students, and approve parent registrations.",
+        "tag1": "Request Approval",
+        "tag2": "Reports"
+      },
+      "teacher": {
+        "title": "Teachers",
+        "description": "Take attendance via QR codes, add student notes, and manage your schedule.",
+        "tag1": "QR Attendance",
+        "tag2": "Student Notes"
+      }
+    },
+    "stakeholders": {
+      "title": "Designed for Every Stakeholder",
+      "forParents": "For Parents",
+      "parentFeatures": {
+        "alerts": "Receive instant absence alerts",
+        "requests": "Submit absence requests online",
+        "evaluations": "View evaluations and progress reports",
+        "notes": "Get notes from teachers"
+      },
+      "forStudents": "For Students",
+      "studentFeatures": {
+        "qrCheckIn": "Quick QR code check-in",
+        "schedule": "View class schedules",
+        "history": "Track attendance history",
+        "grades": "See evaluations and grades"
+      }
+    },
+    "cta": {
+      "title": "Ready to transform your education system?",
+      "subtitle": "Join schools already using EduTech to streamline administration and keep everyone connected."
+    },
+    "footer": {
+      "copyright": "© {year} EduTech. All rights reserved."
+    }
+  },
+  "register": {
+    "iAmA": "I am a...",
+    "selectSchool": "Select School",
+    "noSchoolsAvailable": "No schools available yet",
+    "adminNote": "Teachers and admins are created by school administrators",
+    "parentApprovalNote": "Parent accounts require approval from the school before you can access the system.",
+    "pleaseSelectSchool": "Please select a school"
+  },
+  "pending": {
+    "title": "Account Pending Approval",
+    "description": "Thank you for registering! Your account is awaiting approval from the school administration.",
+    "whatNext": "What's next?",
+    "step1": "The school administration will review your request",
+    "step2": "You will receive a notification when your account is approved",
+    "step3": "Once approved, you can log in and access your dashboard",
+    "backToLogin": "Back to Login"
+  },
+  "dashboard": {
+    "welcome": "Welcome, {name}!",
+    "schoolAdmin": "School Administration",
+    "noSchoolAssigned": "No School Assigned",
+    "contactAdmin": "Please contact your administrator.",
+    "overview": "Overview"
+  },
+  "stats": {
+    "totalClasses": "Total Classes",
+    "totalStudents": "Total Students",
+    "totalTeachers": "Total Teachers",
+    "totalSchools": "Total Schools",
+    "todaysAttendance": "Today's Attendance",
+    "presentToday": "Present Today",
+    "absentToday": "Absent Today",
+    "lateToday": "Late Today",
+    "todaysRate": "Today's Rate",
+    "overallAttendance": "Overall Attendance",
+    "daysPresent": "Days Present",
+    "daysAbsent": "Days Absent",
+    "pendingRequests": "Pending Requests",
+    "allChildrenCombined": "All children combined"
+  },
+  "alerts": {
+    "pendingAbsenceRequests": "{count} Pending Absence Requests",
+    "pendingAbsenceRequest": "1 Pending Absence Request",
+    "parentsAwaitingApproval": "{count} Parents Awaiting Approval",
+    "parentAwaitingApproval": "1 Parent Awaiting Approval",
+    "openIssues": "{count} Open Issues",
+    "openIssue": "1 Open Issue",
+    "pendingLeaveRequests": "You have {count} pending leave requests",
+    "pendingLeaveRequest": "You have 1 pending leave request",
+    "absencesThisWeek": "{count} Absences This Week",
+    "absenceThisWeek": "1 Absence This Week",
+    "clickToView": "Click to view attendance details",
+    "unreadNotifications": "{count} Unread Notifications",
+    "unreadNotification": "1 Unread Notification",
+    "fromSchoolAdmin": "From school administration"
+  },
+  "classes": {
+    "title": "Classes",
+    "overview": "Classes Overview",
+    "createClass": "Create Class",
+    "addClass": "Add Class",
+    "noClasses": "No Classes Yet",
+    "noClassesDesc": "Create classes to organize students.",
+    "className": "Class Name",
+    "gradeLevel": "Grade Level",
+    "studentsCount": "{count} students",
+    "inSession": "In Session",
+    "yourClasses": "Your Classes",
+    "manageStudents": "Manage Students",
+    "noClassesAssigned": "No Classes Assigned",
+    "contactSchoolAdmin": "Contact your school admin to be assigned to classes."
+  },
+  "students": {
+    "title": "Students",
+    "addStudent": "Add Student",
+    "registerNewStudent": "Register new student",
+    "noStudents": "No students",
+    "searchStudents": "Search students...",
+    "yourChildren": "Your Children",
+    "noChildrenLinked": "No Children Linked",
+    "contactSchoolToLink": "Please contact your school administrator to link your children to your account.",
+    "noClassAssigned": "No class assigned",
+    "attendanceRate": "Attendance Rate"
+  },
+  "teachers": {
+    "title": "Teachers",
+    "addTeacher": "Add Teacher",
+    "createTeacherAccount": "Create teacher account",
+    "noTeachers": "No teachers"
+  },
+  "attendance": {
+    "title": "Attendance",
+    "takeAttendance": "Take Attendance",
+    "checkIn": "Check In",
+    "checkInToClass": "Check In to Class",
+    "checkedIn": "Checked In: {class}",
+    "generateQR": "Generate QR Code",
+    "forStudentCheckIn": "For student check-in",
+    "present": "Present",
+    "absent": "Absent",
+    "late": "Late",
+    "excused": "Excused",
+    "detailedRecords": "Detailed records",
+    "noAttendanceRecords": "No attendance records"
+  },
+  "requests": {
+    "title": "Requests",
+    "pendingRequests": "Pending Requests",
+    "absenceRequests": "Absence Requests",
+    "requestAbsence": "Request Absence",
+    "submitAbsence": "Submit Absence",
+    "requestStudentAbsence": "Request student absence",
+    "noRequests": "No requests",
+    "noPendingRequests": "No pending requests",
+    "viewAllRequests": "View All Requests",
+    "startDate": "Start Date",
+    "endDate": "End Date"
+  },
+  "schedule": {
+    "title": "Schedule",
+    "todaysSchedule": "Today's Schedule",
+    "viewFullSchedule": "View Full Schedule",
+    "noClassesToday": "No classes scheduled for today",
+    "inProgress": "In Progress",
+    "room": "Room"
+  },
+  "notes": {
+    "title": "Notes",
+    "addNote": "Add Note",
+    "addStudentNote": "Add Student Note",
+    "forSchoolOrParent": "For school or parent",
+    "recentNotes": "Recent Notes",
+    "noNotesFromTeachers": "No notes from teachers"
+  },
+  "leave": {
+    "title": "Leave",
+    "requestLeave": "Request Leave",
+    "submitAbsenceRequest": "Submit absence request",
+    "noLeaveRequests": "No leave requests"
+  },
+  "issues": {
+    "title": "Issues",
+    "reportIssue": "Report Issue",
+    "toSupervisorAdmin": "To supervisor/admin",
+    "contactSchool": "Contact school",
+    "noIssues": "No issues"
+  },
+  "evaluations": {
+    "title": "Evaluations",
+    "gradesAndProgress": "Grades & progress",
+    "noEvaluations": "No evaluations"
+  },
+  "reports": {
+    "title": "Reports",
+    "attendanceAndGrades": "Attendance & grades",
+    "viewReports": "View Reports"
+  },
+  "announcements": {
+    "title": "Announcements",
+    "newAnnouncement": "New Announcement",
+    "announce": "Announce",
+    "noAnnouncements": "No announcements"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No notifications"
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "addStudent": "Add Student",
+    "addTeacher": "Add Teacher",
+    "createClass": "Create Class",
+    "viewReports": "View Reports",
+    "generateQRCode": "Generate QR Code",
+    "addStudentNote": "Add Student Note",
+    "requestLeave": "Request Leave",
+    "reportIssue": "Report Issue",
+    "submitAbsence": "Submit Absence",
+    "viewAttendance": "View Attendance",
+    "viewEvaluations": "View Evaluations"
+  },
+  "accountPending": {
+    "title": "Account Pending Approval",
+    "description": "Your account is awaiting approval from the school administration. You will be notified once your account is approved.",
+    "school": "School"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for does not exist.",
+    "goHome": "Go Home"
+  },
+  "moe": {
+    "title": "Ministry of Education",
+    "dashboard": "MoE Dashboard"
+  },
+  "school": {
+    "title": "School",
+    "dashboard": "School Dashboard"
+  },
+  "teacherAttendance": {
+    "selectClass": "Select Class",
+    "qrCode": "QR Code",
+    "manualEntry": "Manual Entry",
+    "qrCheckIn": "QR Code Check-in",
+    "manualAttendance": "Manual Attendance",
+    "registerAttendance": "Register Attendance",
+    "registerDescription": "Go through each student sequentially to mark their attendance status and add comments",
+    "startRegistration": "Start Registration",
+    "withNotes": "With Notes",
+    "saving": "Saving...",
+    "saveAttendance": "Save Attendance",
+    "todaysAttendance": "Today's Attendance",
+    "notMarked": "Not Marked",
+    "selectClassTitle": "Select a Class",
+    "selectClassDescription": "Choose a class from the dropdown to start taking attendance."
+  }
+}

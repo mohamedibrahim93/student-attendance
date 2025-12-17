@@ -14,9 +14,10 @@ export function generateSessionCode(): string {
   return code;
 }
 
-export function formatDate(date: Date | string): string {
+export function formatDate(date: Date | string, locale: string = 'ar'): string {
   const d = new Date(date);
-  return d.toLocaleDateString('en-US', {
+  const localeCode = locale === 'ar' ? 'ar-SA' : 'en-US';
+  return d.toLocaleDateString(localeCode, {
     weekday: 'short',
     year: 'numeric',
     month: 'short',
@@ -24,9 +25,10 @@ export function formatDate(date: Date | string): string {
   });
 }
 
-export function formatTime(date: Date | string): string {
+export function formatTime(date: Date | string, locale: string = 'ar'): string {
   const d = new Date(date);
-  return d.toLocaleTimeString('en-US', {
+  const localeCode = locale === 'ar' ? 'ar-SA' : 'en-US';
+  return d.toLocaleTimeString(localeCode, {
     hour: '2-digit',
     minute: '2-digit',
   });
@@ -54,4 +56,3 @@ export function calculateAttendancePercentage(
   if (total === 0) return 0;
   return Math.round((present / total) * 100);
 }
-

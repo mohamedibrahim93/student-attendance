@@ -1,0 +1,432 @@
+{
+  "common": {
+    "appName": "EduTech",
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "add": "إضافة",
+    "create": "إنشاء",
+    "update": "تحديث",
+    "submit": "إرسال",
+    "search": "بحث",
+    "filter": "تصفية",
+    "view": "عرض",
+    "viewAll": "عرض الكل",
+    "back": "رجوع",
+    "backToHome": "العودة للرئيسية",
+    "next": "التالي",
+    "previous": "السابق",
+    "yes": "نعم",
+    "no": "لا",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "pending": "قيد الانتظار",
+    "approved": "تمت الموافقة",
+    "rejected": "مرفوض",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "all": "الكل",
+    "none": "لا شيء",
+    "actions": "إجراءات",
+    "status": "الحالة",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "thisWeek": "هذا الأسبوع",
+    "thisMonth": "هذا الشهر",
+    "noData": "لا توجد بيانات",
+    "error": "خطأ",
+    "success": "تم بنجاح",
+    "unexpectedError": "حدث خطأ غير متوقع",
+    "required": "مطلوب",
+    "optional": "اختياري",
+    "manage": "إدارة",
+    "details": "تفاصيل",
+    "description": "الوصف",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "fullName": "الاسم الكامل",
+    "note": "ملاحظة",
+    "notes": "ملاحظات",
+    "reason": "السبب",
+    "review": "مراجعة",
+    "read": "قراءة",
+    "language": "اللغة",
+    "arabic": "العربية",
+    "english": "English"
+  },
+  "auth": {
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "signOut": "تسجيل الخروج",
+    "logout": "تسجيل الخروج",
+    "welcomeBack": "مرحباً بعودتك",
+    "signInToApp": "تسجيل الدخول إلى EduTech",
+    "createAccount": "إنشاء حساب جديد",
+    "getStartedWith": "ابدأ مع EduTech",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "emailPlaceholder": "example@school.edu",
+    "passwordPlaceholder": "••••••••",
+    "namePlaceholder": "أحمد محمد",
+    "phonePlaceholder": "+966 50 000 0000",
+    "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+    "passwordMinLength": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+    "demoAccounts": "حسابات تجريبية",
+    "schoolAdmin": "مدير المدرسة",
+    "teacher": "معلم",
+    "parent": "ولي أمر",
+    "student": "طالب"
+  },
+  "roles": {
+    "moe_admin": "مسؤول وزارة التعليم",
+    "school_admin": "مدير المدرسة",
+    "supervisor": "مشرف",
+    "teacher": "معلم",
+    "parent": "ولي أمر",
+    "student": "طالب"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "schools": "المدارس",
+    "classes": "الفصول",
+    "students": "الطلاب",
+    "teachers": "المعلمون",
+    "parents": "أولياء الأمور",
+    "subjects": "المواد",
+    "attendance": "الحضور",
+    "requests": "الطلبات",
+    "reports": "التقارير",
+    "announcements": "الإعلانات",
+    "notifications": "الإشعارات",
+    "schedule": "الجدول",
+    "notes": "الملاحظات",
+    "leave": "الإجازات",
+    "leaveRequests": "طلبات الإجازة",
+    "absenceRequests": "طلبات الغياب",
+    "evaluations": "التقييمات",
+    "issues": "المشكلات",
+    "checkIn": "تسجيل الحضور",
+    "myAttendance": "حضوري"
+  },
+  "home": {
+    "heroTagline": "نظام شامل لإدارة المدارس",
+    "heroTitle": "منصة التعليم الذكي",
+    "heroSubtitle": "من وزارة التعليم إلى الفصول الدراسية. إدارة المدارس، تتبع الحضور، التواصل مع أولياء الأمور، وتبسيط الإدارة التعليمية.",
+    "startFreeTrial": "ابدأ الآن مجاناً",
+    "getStartedFree": "ابدأ مجاناً",
+    "features": {
+      "title": "حل متكامل لإدارة التعليم",
+      "subtitle": "منصة موحدة لوزارة التعليم والمدارس والمعلمين وأولياء الأمور والطلاب.",
+      "qrAttendance": {
+        "title": "حضور برمز QR",
+        "description": "المعلمون ينشئون رموز QR محددة بوقت. الطلاب يسجلون حضورهم بسرعة."
+      },
+      "multiLevel": {
+        "title": "هيكل متعدد المستويات",
+        "description": "وزارة التعليم ← المدارس ← الفصول. صلاحيات مناسبة لكل مستوى."
+      },
+      "absenceWorkflow": {
+        "title": "سير طلبات الغياب",
+        "description": "أولياء الأمور يقدمون الطلبات، المدارس توافق أو ترفض مع الإشعارات."
+      },
+      "notifications": {
+        "title": "إشعارات فورية",
+        "description": "تنبيهات للغياب والإعلانات والتقييمات وتحديثات الطلبات."
+      },
+      "schedules": {
+        "title": "جداول المواد",
+        "description": "تتبع الحضور لكل مادة مع تعيينات المعلمين والأوقات."
+      },
+      "reports": {
+        "title": "تقارير شاملة",
+        "description": "نسب الحضور والتقييمات والتحليلات على جميع المستويات."
+      }
+    },
+    "cards": {
+      "moe": {
+        "title": "وزارة التعليم",
+        "description": "الإشراف على جميع المدارس، عرض التقارير، تتبع الأداء، وإرسال الإعلانات.",
+        "tag1": "إدارة متعددة المدارس",
+        "tag2": "التحليلات"
+      },
+      "school": {
+        "title": "إدارة المدرسة",
+        "description": "إدارة الفصول والمعلمين والطلاب والموافقة على تسجيل أولياء الأمور.",
+        "tag1": "الموافقة على الطلبات",
+        "tag2": "التقارير"
+      },
+      "teacher": {
+        "title": "المعلمون",
+        "description": "تسجيل الحضور عبر رموز QR، إضافة ملاحظات الطلاب، وإدارة الجدول.",
+        "tag1": "حضور QR",
+        "tag2": "ملاحظات الطلاب"
+      }
+    },
+    "stakeholders": {
+      "title": "مصمم لجميع الأطراف",
+      "forParents": "لأولياء الأمور",
+      "parentFeatures": {
+        "alerts": "استلام تنبيهات الغياب الفورية",
+        "requests": "تقديم طلبات الغياب إلكترونياً",
+        "evaluations": "عرض التقييمات وتقارير التقدم",
+        "notes": "استلام ملاحظات المعلمين"
+      },
+      "forStudents": "للطلاب",
+      "studentFeatures": {
+        "qrCheckIn": "تسجيل حضور سريع برمز QR",
+        "schedule": "عرض جداول الحصص",
+        "history": "تتبع سجل الحضور",
+        "grades": "عرض التقييمات والدرجات"
+      }
+    },
+    "cta": {
+      "title": "مستعد لتحويل نظامك التعليمي؟",
+      "subtitle": "انضم للمدارس التي تستخدم EduTech بالفعل لتبسيط الإدارة وإبقاء الجميع على تواصل."
+    },
+    "footer": {
+      "copyright": "© {year} EduTech. جميع الحقوق محفوظة."
+    }
+  },
+  "register": {
+    "iAmA": "أنا...",
+    "selectSchool": "اختر المدرسة",
+    "noSchoolsAvailable": "لا توجد مدارس متاحة حالياً",
+    "adminNote": "المعلمون والمديرون يتم إنشاؤهم بواسطة مديري المدارس",
+    "parentApprovalNote": "حسابات أولياء الأمور تحتاج موافقة من إدارة المدرسة قبل الوصول للنظام.",
+    "pleaseSelectSchool": "الرجاء اختيار مدرسة"
+  },
+  "pending": {
+    "title": "حسابك قيد المراجعة",
+    "description": "شكراً لتسجيلك! حسابك ينتظر الموافقة من إدارة المدرسة.",
+    "whatNext": "ماذا بعد؟",
+    "step1": "إدارة المدرسة ستراجع طلبك",
+    "step2": "ستتلقى إشعاراً عند الموافقة على حسابك",
+    "step3": "بعد الموافقة، يمكنك تسجيل الدخول والوصول للوحة التحكم",
+    "backToLogin": "العودة لتسجيل الدخول"
+  },
+  "dashboard": {
+    "welcome": "مرحباً، {name}!",
+    "schoolAdmin": "إدارة المدرسة",
+    "noSchoolAssigned": "لا توجد مدرسة معينة",
+    "contactAdmin": "الرجاء التواصل مع المسؤول.",
+    "overview": "نظرة عامة"
+  },
+  "stats": {
+    "totalClasses": "إجمالي الفصول",
+    "totalStudents": "إجمالي الطلاب",
+    "totalTeachers": "إجمالي المعلمين",
+    "totalSchools": "إجمالي المدارس",
+    "todaysAttendance": "حضور اليوم",
+    "presentToday": "الحاضرون اليوم",
+    "absentToday": "الغائبون اليوم",
+    "lateToday": "المتأخرون اليوم",
+    "todaysRate": "نسبة اليوم",
+    "overallAttendance": "إجمالي الحضور",
+    "daysPresent": "أيام الحضور",
+    "daysAbsent": "أيام الغياب",
+    "pendingRequests": "طلبات معلقة",
+    "allChildrenCombined": "جميع الأبناء معاً"
+  },
+  "alerts": {
+    "pendingAbsenceRequests": "{count} طلب غياب معلق",
+    "pendingAbsenceRequest": "طلب غياب معلق واحد",
+    "parentsAwaitingApproval": "{count} ولي أمر ينتظر الموافقة",
+    "parentAwaitingApproval": "ولي أمر واحد ينتظر الموافقة",
+    "openIssues": "{count} مشكلة مفتوحة",
+    "openIssue": "مشكلة مفتوحة واحدة",
+    "pendingLeaveRequests": "لديك {count} طلب إجازة معلق",
+    "pendingLeaveRequest": "لديك طلب إجازة معلق واحد",
+    "absencesThisWeek": "{count} غياب هذا الأسبوع",
+    "absenceThisWeek": "غياب واحد هذا الأسبوع",
+    "clickToView": "اضغط لعرض تفاصيل الحضور",
+    "unreadNotifications": "{count} إشعار غير مقروء",
+    "unreadNotification": "إشعار واحد غير مقروء",
+    "fromSchoolAdmin": "من إدارة المدرسة"
+  },
+  "classes": {
+    "title": "الفصول",
+    "overview": "نظرة عامة على الفصول",
+    "createClass": "إنشاء فصل",
+    "addClass": "إضافة فصل",
+    "noClasses": "لا توجد فصول بعد",
+    "noClassesDesc": "قم بإنشاء فصول لتنظيم الطلاب.",
+    "className": "اسم الفصل",
+    "gradeLevel": "المرحلة الدراسية",
+    "studentsCount": "{count} طالب",
+    "inSession": "في الحصة",
+    "yourClasses": "فصولك",
+    "manageStudents": "إدارة الطلاب",
+    "noClassesAssigned": "لا توجد فصول معينة",
+    "contactSchoolAdmin": "تواصل مع مدير المدرسة لتعيينك في فصول."
+  },
+  "students": {
+    "title": "الطلاب",
+    "addStudent": "إضافة طالب",
+    "registerNewStudent": "تسجيل طالب جديد",
+    "noStudents": "لا يوجد طلاب",
+    "searchStudents": "بحث عن طلاب...",
+    "yourChildren": "أبناؤك",
+    "noChildrenLinked": "لا يوجد أبناء مرتبطين",
+    "contactSchoolToLink": "الرجاء التواصل مع إدارة المدرسة لربط أبنائك بحسابك.",
+    "noClassAssigned": "لا يوجد فصل معين",
+    "attendanceRate": "نسبة الحضور"
+  },
+  "teachers": {
+    "title": "المعلمون",
+    "addTeacher": "إضافة معلم",
+    "createTeacherAccount": "إنشاء حساب معلم",
+    "noTeachers": "لا يوجد معلمون"
+  },
+  "attendance": {
+    "title": "الحضور",
+    "takeAttendance": "تسجيل الحضور",
+    "checkIn": "تسجيل الدخول",
+    "checkInToClass": "تسجيل الدخول للفصل",
+    "checkedIn": "مسجل الدخول: {class}",
+    "generateQR": "إنشاء رمز QR",
+    "forStudentCheckIn": "لتسجيل حضور الطلاب",
+    "present": "حاضر",
+    "absent": "غائب",
+    "late": "متأخر",
+    "excused": "مستأذن",
+    "detailedRecords": "سجلات مفصلة",
+    "noAttendanceRecords": "لا توجد سجلات حضور"
+  },
+  "requests": {
+    "title": "الطلبات",
+    "pendingRequests": "طلبات معلقة",
+    "absenceRequests": "طلبات الغياب",
+    "requestAbsence": "طلب غياب",
+    "submitAbsence": "تقديم طلب غياب",
+    "requestStudentAbsence": "طلب غياب طالب",
+    "noRequests": "لا توجد طلبات",
+    "noPendingRequests": "لا توجد طلبات معلقة",
+    "viewAllRequests": "عرض جميع الطلبات",
+    "startDate": "تاريخ البداية",
+    "endDate": "تاريخ النهاية"
+  },
+  "schedule": {
+    "title": "الجدول",
+    "todaysSchedule": "جدول اليوم",
+    "viewFullSchedule": "عرض الجدول الكامل",
+    "noClassesToday": "لا توجد حصص مجدولة اليوم",
+    "inProgress": "جارية الآن",
+    "room": "الغرفة"
+  },
+  "notes": {
+    "title": "الملاحظات",
+    "addNote": "إضافة ملاحظة",
+    "addStudentNote": "إضافة ملاحظة طالب",
+    "forSchoolOrParent": "للمدرسة أو ولي الأمر",
+    "recentNotes": "ملاحظات حديثة",
+    "noNotesFromTeachers": "لا توجد ملاحظات من المعلمين"
+  },
+  "leave": {
+    "title": "الإجازات",
+    "requestLeave": "طلب إجازة",
+    "submitAbsenceRequest": "تقديم طلب غياب",
+    "noLeaveRequests": "لا توجد طلبات إجازة"
+  },
+  "issues": {
+    "title": "المشكلات",
+    "reportIssue": "الإبلاغ عن مشكلة",
+    "toSupervisorAdmin": "للمشرف/المدير",
+    "contactSchool": "التواصل مع المدرسة",
+    "noIssues": "لا توجد مشكلات"
+  },
+  "evaluations": {
+    "title": "التقييمات",
+    "gradesAndProgress": "الدرجات والتقدم",
+    "noEvaluations": "لا توجد تقييمات"
+  },
+  "reports": {
+    "title": "التقارير",
+    "attendanceAndGrades": "الحضور والدرجات",
+    "viewReports": "عرض التقارير"
+  },
+  "announcements": {
+    "title": "الإعلانات",
+    "newAnnouncement": "إعلان جديد",
+    "announce": "إعلان",
+    "noAnnouncements": "لا توجد إعلانات"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "noNotifications": "لا توجد إشعارات"
+  },
+  "quickActions": {
+    "title": "إجراءات سريعة",
+    "addStudent": "إضافة طالب",
+    "addTeacher": "إضافة معلم",
+    "createClass": "إنشاء فصل",
+    "viewReports": "عرض التقارير",
+    "generateQRCode": "إنشاء رمز QR",
+    "addStudentNote": "إضافة ملاحظة طالب",
+    "requestLeave": "طلب إجازة",
+    "reportIssue": "الإبلاغ عن مشكلة",
+    "submitAbsence": "تقديم طلب غياب",
+    "viewAttendance": "عرض الحضور",
+    "viewEvaluations": "عرض التقييمات"
+  },
+  "accountPending": {
+    "title": "الحساب قيد المراجعة",
+    "description": "حسابك ينتظر الموافقة من إدارة المدرسة. سيتم إشعارك عند الموافقة على حسابك.",
+    "school": "المدرسة"
+  },
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "description": "عذراً، الصفحة التي تبحث عنها غير موجودة.",
+    "goHome": "العودة للرئيسية"
+  },
+  "moe": {
+    "title": "وزارة التعليم",
+    "dashboard": "لوحة تحكم الوزارة"
+  },
+  "school": {
+    "title": "المدرسة",
+    "dashboard": "لوحة تحكم المدرسة"
+  },
+  "teacherAttendance": {
+    "selectClass": "اختر الفصل",
+    "qrCode": "رمز QR",
+    "manualEntry": "إدخال يدوي",
+    "qrCheckIn": "تسجيل حضور برمز QR",
+    "manualAttendance": "تسجيل حضور يدوي",
+    "registerAttendance": "تسجيل الحضور",
+    "registerDescription": "مرر على كل طالب لتسجيل حالة حضوره وإضافة ملاحظات",
+    "startRegistration": "بدء التسجيل",
+    "withNotes": "مع ملاحظات",
+    "saving": "جاري الحفظ...",
+    "saveAttendance": "حفظ الحضور",
+    "todaysAttendance": "حضور اليوم",
+    "notMarked": "غير مسجل",
+    "selectClassTitle": "اختر فصلاً",
+    "selectClassDescription": "اختر فصلاً من القائمة المنسدلة لبدء تسجيل الحضور."
+  },
+  "qrGenerator": {
+    "qrCodeAlt": "رمز QR للحضور",
+    "sessionCode": "رمز الجلسة",
+    "expiresIn": "ينتهي خلال",
+    "regenerate": "إعادة إنشاء",
+    "instructions": "يمكن للطلاب مسح رمز QR أو إدخال رمز الجلسة لتسجيل حضورهم. سيتم تحديث الرمز تلقائياً كل 5 دقائق."
+  },
+  "attendancePopup": {
+    "studentOf": "الطالب {current} من {total}",
+    "marked": "مسجل",
+    "markStatus": "سجل حالة الحضور لكل طالب",
+    "selectStatus": "اختر حالة الحضور",
+    "addComment": "إضافة ملاحظة (اختياري)",
+    "comment": "ملاحظة",
+    "remove": "إزالة",
+    "commentPlaceholder": "أضف ملاحظات حول حضور هذا الطالب...",
+    "skip": "تخطي",
+    "complete": "إكمال"
+  }
+}
